@@ -74,7 +74,7 @@ class MainApp:
 
     def create_header(self):
         self.header_frame = Frame(self.window, bg="blue", height=50)
-        self.header_frame.pack(fill=X)
+        self.header_frame.pack(fill=X)  
 
         header_label = Label(self.header_frame, text="Election Management System", font=("Arial", 20, "bold"), bg="blue", fg="white")
         header_label.pack(pady=10)
