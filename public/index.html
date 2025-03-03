@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title> website with registartion </title>
+  <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <nav>
+     <ul>
+        <li><a href="#home">Home </a></li>
+        <li><a href="#about">About us </a></li>
+                <li><a href="#registration">registration </a>
+                   <ul>
+                    <li> <a href="#voter-registration">Voter-registration</a></li>
+                  <li> <a href="#candidate-registration">Candidate-registration</a></li>
+                  <li> <a href="#login"> Login</a></li>
+                  </ul>
+                  </li>
+     </ul>    
+    </nav>
+    <section id="home">
+    <h1>Welcome to our website</h1>
+    </section>
+
+     <section id="home">
+    <h1>About us</h1>
+    <p> Information about us</p>
+
+    </section>
+
+    <section id="registration">
+    <h1> Registartion</h1>
+    <div id="voter-registration">
+     <h2> Voter-registration</h2>
+     <form id="voterForm">
+       <label for="voterName"> Name: </label>
+       <input type="text" id="voterName" name="voterName" required>
+              <label for="voterEmail"> Email: </label>
+       <input type="email" id="voterEmail" name="voterEmail" required>
+       <label for="voterDocument"> Upload document: </label>
+       <input type="file" id="voterDocument" name="voterDocument" required>
+       <button type="submit">Register</button>
+       </form>
+       </div>
+       <div id="candidate-registration">
+        <h2>Candidate registration</h2>
+        <form id="candidateForm">
+        <label for="candidateName"> Name: </label>
+       <input type="text" id="candidateName" name="candidateName" required>
+              <label for="candidateEmail"> Email: </label>
+       <input type="email" id="candidateEmail" name="candidateEmail" required>
+       <label for="candidateDocument"> Upload document: </label>
+       <input type="file" id="candidateDocument" name="candidateDocument" required>
+       <button type="submit">Register</button>
+       </form>
+        </div>
+        <div id="login"> 
+          <h2> Login</h2>
+          <form id="LoginForm">
+          <label for="userID"> User ID: </label>
+          <input type="text" id="userID" name="userID" required>
+          <label for="password">Password: </label>
+          <input type="password" id="password" name="password" required> 
+          <button type="submit">Login </button>
+          </form>
+         </div>
+        
+    </section>
+    <script src="script.js"></script>
+  </body>
+  </html>
+
