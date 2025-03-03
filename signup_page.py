@@ -72,7 +72,7 @@ class SignUp:
 
     def generate_password(self):
         characters = string.ascii_letters + string.digits + string.punctuation
-        password = ''.join(random.choice(characters) for i in range(8))
+        password = ''.join(random.choice(characters) for i in range(5))
         return password
 
     def signup_func(self):
@@ -84,7 +84,7 @@ class SignUp:
             try:
                 connection = pymysql.connect(host=cr.host, user=cr.user, password=cr.password, database=cr.database)
                 cur = connection.cursor()
-                cur.execute("select * from student_regist where email=%s", self.email_txt.get())
+                cur.execute("select * from voter_regist where email=%s", self.email_txt.get())
                 row = cur.fetchone()
 
                 if row != None:
@@ -92,7 +92,7 @@ class SignUp:
                 else:
                     user_id = self.generate_user_id()
                     password = self.generate_password()
-                    cur.execute("insert into student_regist(user_id, f_name, l_name, email, question, answer, password) values(%s, %s, %s, %s, %s, %s, %s)",
+                    cur.execute("insert into voter_regist(user_id, f_name, l_name, email, question, answer, password) values(%s, %s, %s, %s, %s, %s, %s)",
                                 (
                                     user_id,
                                     self.fname_txt.get(),

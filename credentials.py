@@ -1,5 +1,5 @@
 # User Credentials
-host = 'localhost'
+host = '127.0.0.1'
 user = 'root'
-password = 'nik@102004'
-database = 'student_database'
+password = 'root'
+database = 'voter'

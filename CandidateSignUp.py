@@ -81,7 +81,7 @@ class CandidateSignUp:
         self.signup.place(x=120, y=530, width=250)
 
     def generate_user_id(self):
-        return ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(8))
+        return ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(5))
 
     def generate_password(self):
         characters = string.ascii_letters + string.digits + string.punctuation
