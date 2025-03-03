@@ -27,8 +27,8 @@ class CandidateDashboard:
         conn = mysql.connector.connect(
             host="localhost",
             user="root",
-            password="nik@102004",
-            database="student_database"
+            password="root",
+            database="voter"
         )
         cursor = conn.cursor()
         cursor.execute('SELECT photo_path, party_name, election_name, achievements, candidate_name FROM can_dashboard WHERE user_id=%s', (self.user_id,))
@@ -165,8 +165,8 @@ class CandidateDashboard:
         conn = mysql.connector.connect(
             host="localhost",
             user="root",
-            password="nik@102004",
-            database="student_database"
+            password="root",
+            database="voter"
         )
         cursor = conn.cursor()
 
