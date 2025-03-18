@@ -71,10 +71,10 @@ class AdminDashboard:
         scrollbar.pack(side="right", fill="y")
 
         conn = mysql.connector.connect(
-            host="localhost",
+            host="127.0.0.1",
             user="root",
-            password="nik@102004",  
-            database="student_database"
+            password="root",  
+            database="voter"
         )
         cursor = conn.cursor()
         cursor.execute('SELECT user_id, party_name, election_name, achievements, photo_path FROM can_dashboard')
@@ -107,10 +107,10 @@ class AdminDashboard:
 
     def delete_candidate(self, user_id):
         conn = mysql.connector.connect(
-            host="localhost",
+            host="127.0.0.1",
             user="root",
-            password="nik@102004",  # Replace with your MySQL password
-            database="student_database"
+            password="root",  
+            database="voter"
         )
         cursor = conn.cursor()
         cursor.execute('DELETE FROM can_dashboard WHERE user_id=%s', (user_id,))

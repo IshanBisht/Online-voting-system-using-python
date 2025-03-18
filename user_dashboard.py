@@ -12,7 +12,7 @@ class UserDashboard:
         self.window.config(bg="white")
         self.user_id = user_id  # Assuming user_id is passed when UserDashboard is initialized
 
-        Label(self.window, text="Welcome to the User Dashboard", font=("times new roman", 40, "bold"), bg="white", fg="blue").pack(pady=20)
+        Label(self.window, text="Welcome to the User Dashboard", font=("times new roman", 40, "bold"), bg="white", fg="black").pack(pady=20)
 
         self.f = Frame(self.window, bg="green2")
         self.f.place(x=8, y=8, width=120, height=50)
@@ -114,7 +114,7 @@ class UserDashboard:
         cursor = conn.cursor()
 
         # Check if user exists in student_regist
-        cursor.execute('SELECT user_id FROM student_regist WHERE user_id=%s', (self.user_id,))
+        cursor.execute('SELECT user_id FROM voter_regist WHERE user_id=%s', (self.user_id,))
         if not cursor.fetchone():
             messagebox.showerror("Error", "Invalid user ID", parent=self.window)
             conn.close()
