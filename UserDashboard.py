@@ -117,7 +117,7 @@ class UserDashboard:
         cursor = conn.cursor()
 
         # Check if user exists in student_regist
-        cursor.execute('SELECT user_id FROM student_regist WHERE user_id=%s', (self.user_id,))
+        cursor.execute('SELECT user_id FROM voter_regist WHERE user_id=%s', (self.user_id,))
         if not cursor.fetchone():
             messagebox.showerror("Error", "Invalid user ID", parent=self.window)
             conn.close()
