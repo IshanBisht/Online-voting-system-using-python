@@ -1,7 +1,4 @@
-from tkinter import *
-from tkinter import ttk, messagebox
-import pymysql
-import Voting_System.base.credentials as cr
+from Voting_System.base.base import *
 
 class VoterLogin:
     def __init__(self, root):
