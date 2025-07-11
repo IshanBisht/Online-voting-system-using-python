@@ -1,178 +1,127 @@
-# from tkinter import *
-# from tkinter import ttk, messagebox, filedialog
-# import pymysql
-# import os
-# import Voting_System.base.credentials as cr
-# import random
-# import string
-# from PIL import Image, ImageTk
-
 from Voting_System.base.base import *
 
-class CandidateRegistration:
-    def __init__(self, root):
-        self.window = root
-        self.window.title("Candidate Sign Up")
-        screen_width=self.window.winfo_screenwidth()
-        screen_height=self.window.winfo_screenheight()
-        self.window.geometry(f"{screen_width}x{screen_height}+0+0")
+class CandidateRegistration(QWidget):
+    FIXED_WIDTH = 600
 
-        self.window.config(bg="white")
-        
-        self.bg_img = ImageTk.PhotoImage(file="Images/photo1.jpeg")  # Update image path
-        background = Label(self.window, image=self.bg_img)
-        background.place(x=0, y=0, relwidth=1, relheight=1)
+    def __init__(self):
+        super().__init__()
 
-        self.f=Frame(self.window,bg="green2")
-        self.f.place(x=8,y=8,width=120,height=50)
-        self.bck_button = Button(self.f, text="Back", command=self.bck_button, font=("times new roman", 18, "bold"), bd=0, cursor="hand2", bg="green2", fg="white").place(x=10, y=10, width=80)
+        self.setWindowTitle(TITLE_CANDIDATE_REGISTRATION_PAGE)
+        self.setWindowIcon( ovs_app_config.getIcon() )
+        self.setStyleSheet(CSS_STYLE_FOR_WIDGETS)
 
-        self.fi=Frame(self.window,bg="green2")
-        self.fi.place(x=130,y=8,width=120,height=50)
-        self.log_button = Button(self.fi, text="LogIn", command=self.log_button, font=("times new roman", 18, "bold"), bd=0, cursor="hand2", bg="green2", fg="white").place(x=10, y=10, width=80)
+        self.resize_to_screen( )
+        self.center_window( )
+        self.setup_ui()
 
-        frame = Frame(self.window, bg="white")
-        frame.place(x=350, y=100, width=500, height=600)
+    def resize_to_screen( self ) -> None:
+        screen = ovs_app_config.getScreen()
+        self.FIXED_HEIGHT = int(screen.height() * 0.8)  # use 80% of screen height
+        self.setFixedSize(self.FIXED_WIDTH, self.FIXED_HEIGHT)
 
-        title1 = Label(frame, text="Candidate Sign Up", font=("times new roman", 25, "bold"), bg="white")
-        title1.place(x=20, y=10)
+    def center_window( self ) -> None:
+        screen = ovs_app_config.getScreen()
+        x = (screen.width() - self.FIXED_WIDTH) // 2
+        y = (screen.height() - self.FIXED_HEIGHT) // 2
+        self.setGeometry(QRect(x, y, self.FIXED_WIDTH, self.FIXED_HEIGHT))
 
-        f_name = Label(frame, text="First name", font=("helvetica", 15, "bold"), bg="white")
-        f_name.place(x=20, y=100)
-        self.fname_txt = Entry(frame, font=("arial"))
-        self.fname_txt.place(x=20, y=130, width=200)
+    def setup_ui(self):
+        layout = QVBoxLayout()
+        layout.setAlignment( Qt.AlignmentFlag.AlignTop )
+        layout.setContentsMargins(30, 20, 30, 20)
+        layout.setSpacing(15)
 
-        l_name = Label(frame, text="Last name", font=("helvetica", 15, "bold"), bg="white")
-        l_name.place(x=240, y=100)
-        self.lname_txt = Entry(frame, font=("arial"))
-        self.lname_txt.place(x=240, y=130, width=200)
+        heading = QLabel(TITLE_CANDIDATE_REGISTRATION_PAGE)
+        heading.setAlignment( Qt.AlignmentFlag.AlignCenter )
+        heading.setFont( ovs_app_config.getHeadingFont() )
+        heading.setStyleSheet( CSS_STYLE_FOR_TOP_HEADING )
+        layout.addWidget(heading)
 
-        email = Label(frame, text="Email", font=("helvetica", 15, "bold"), bg="white")
-        email.place(x=20, y=180)
-        self.email_txt = Entry(frame, font=("arial"))
-        self.email_txt.place(x=20, y=210, width=420)
-
-        sec_question = Label(frame, text="Security questions", font=("helvetica", 15, "bold"), bg="white")
-        sec_question.place(x=20, y=260)
-        self.questions = ttk.Combobox(frame, font=("helvetica", 13), state='readonly', justify=CENTER)
-        self.questions['values'] = ("Select", "What's your pet name?", "Your first teacher name", "Your birthplace", "Your favorite movie")
-        self.questions.place(x=20, y=290, width=200)
-        self.questions.current(0)
-
-        answer = Label(frame, text="Answer", font=("helvetica", 15, "bold"), bg="white")
-        answer.place(x=240, y=260)
-        self.answer_txt = Entry(frame, font=("arial"))
-        self.answer_txt.place(x=240, y=290, width=200)
-
-        document_label = Label(frame, text="Upload Document", font=("helvetica", 15, "bold"), bg="white")
-        document_label.place(x=20, y=340)
-        self.document_btn = Button(frame, text="Choose File", command=self.choose_file, font=("helvetica", 12), bg="light gray")
-        self.document_btn.place(x=20, y=370)
-        self.document_path = ""
-
-        aadhar_label = Label(frame, text="Aadhar Number", font=("helvetica", 15, "bold"), bg="white")
-        aadhar_label.place(x=20, y=420)
-        self.aadhar_txt = Entry(frame, font=("arial"))
-        self.aadhar_txt.place(x=20, y=450, width=420)
-
-        self.terms = IntVar()
-        terms_and_con = Checkbutton(frame, text="I Agree The Terms & Conditions", variable=self.terms, onvalue=1, offvalue=0, bg="white", font=("times new roman", 12))
-        terms_and_con.place(x=20, y=480)
-
-        self.signup = Button(frame, text="Sign Up", command=self.signup_func, font=("times new roman", 18, "bold"), bd=0, cursor="hand2", bg="green2", fg="white")
-        self.signup.place(x=120, y=530, width=250)
-
-    def generate_user_id(self):
-        return ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(5))
-
-    def generate_password(self):
-        characters = string.ascii_letters + string.digits + string.punctuation
-        password = ''.join(random.choice(characters) for i in range(8))
-        return password
-
-    def choose_file(self):
-        file_path = filedialog.askopenfilename(filetypes=[("PDF files", ".pdf"), ("All files", ".*")])
-        if file_path:
-            self.document_path = file_path
-            messagebox.showinfo("File Selected", f"Selected file: {os.path.basename(file_path)}")
-
-    def signup_func(self):
-        if self.fname_txt.get() == "" or self.lname_txt.get() == "" or self.email_txt.get() == "" or self.questions.get() == "Select" or self.answer_txt.get() == "" or self.aadhar_txt.get() == "" or self.document_path == "":
-            messagebox.showerror("Error!", "Sorry!, All fields are required", parent=self.window)
-        elif self.terms.get() == 0:
-            messagebox.showerror("Error!", "Please Agree with our Terms & Conditions", parent=self.window)
-        else:
-            try:
-                # Connect to MySQL database
-                connection = pymysql.connect(host=cr.host, user=cr.user, password=cr.password, database=cr.database)
-                cur = connection.cursor()
-
-                # Check if email already exists
-                cur.execute("select * from candidate_regist where email=%s", self.email_txt.get())
-                row = cur.fetchone()
-                if row is not None:
-                    messagebox.showerror("Error!", "The email ID already exists, please try again with another email ID", parent=self.window)
-                else:
-                    # Generate user ID and password
-                    user_id = self.generate_user_id()
-                    password = self.generate_password()
-
-                    # Insert data into the database
-                    cur.execute("insert into candidate_regist(user_id, f_name, l_name, email, question, answer, document_path, aadhar_no, password) values(%s, %s, %s, %s, %s, %s, %s, %s, %s)",
-                                (
-                                    user_id,
-                                    self.fname_txt.get(),
-                                    self.lname_txt.get(),
-                                    self.email_txt.get(),
-                                    self.questions.get(),
-                                    self.answer_txt.get(),
-                                    self.document_path,
-                                    self.aadhar_txt.get(),
-                                    password
-                                ))
-
-                    # Commit changes and close connection
-                    connection.commit()
-                    connection.close()
-
-                    messagebox.showinfo("Congratulations!", f"Registration Successful. Your User ID is: {user_id} and Password is: {password}", parent=self.window)
-                    self.reset_fields()
-
-            except Exception as es:
-                messagebox.showerror("Error!", f"Error due to {es}", parent=self.window)
-
-    def reset_fields(self):
-        self.fname_txt.delete(0, END)
-        self.lname_txt.delete(0, END)
-        self.email_txt.delete(0, END)
-        self.questions.current(0)
-        self.answer_txt.delete(0, END)
-        self.aadhar_txt.delete(0, END)
-        self.document_path = ""
-        self.terms.set(0)
-
-    def bck_button(self):
-        self.window.destroy()
-        import mai
-        root = Tk()
-        obj = mai.MainApp(root)
-        root.mainloop()
-
-    def bck_button(self):
-        self.window.destroy()
-        import mai
-        root = Tk()
-        obj = mai.MainApp(root)
-        root.mainloop()
-    def log_button(self):
-        self.window.destroy()
-        import  Voting_System.interface.CandidateLogin as CandidateLogin
-        root = Tk()
-        obj = CandidateLogin.CandidateLogin(root)
-        root.mainloop()
+        form_layout = QVBoxLayout()
+        form_layout.setSpacing(18)
 
 
-if __name__ == "__main__":
-    root = Tk()
-    obj = CandidateSignUp(root)
-    root.mainloop()
+        # First Name
+        self.first_name = QLineEdit()
+        form_layout.addWidget(self._labeled_widget("First Name", self.first_name, CSS_STYLE_FOR_INPUT_LABELS))
+
+        # Last Name
+        self.last_name = QLineEdit()
+        form_layout.addWidget(self._labeled_widget("Last Name", self.last_name, CSS_STYLE_FOR_INPUT_LABELS))
+
+        # Email
+        self.email = QLineEdit()
+        self.email.setPlaceholderText("Enter a valid email")
+        form_layout.addWidget(self._labeled_widget("Email", self.email, CSS_STYLE_FOR_INPUT_LABELS))
+
+        # Security Question
+        self.security_question = QComboBox()
+        self.security_question.addItems([
+            "What's your pet name?",
+            "Who's your first teacher?",
+            "Where's your birthplace?",
+            "What's your favorite movie?"
+        ])
+        form_layout.addWidget(self._labeled_widget("Security Question", self.security_question, CSS_STYLE_FOR_INPUT_LABELS))
+
+        # Answer to security question
+        self.security_answer = QLineEdit()
+        self.security_answer.setPlaceholderText("Write a valid answer of your security question")
+        form_layout.addWidget(self._labeled_widget("Answer to Security Question", self.security_answer, CSS_STYLE_FOR_INPUT_LABELS))
+
+        # Aadhar Number
+        self.aadhar = QLineEdit()
+        self.aadhar.setMaxLength(12)
+        self.aadhar.setPlaceholderText("Enter 12-digit Aadhar Number")
+        form_layout.addWidget(self._labeled_widget("Aadhar Number", self.aadhar, CSS_STYLE_FOR_INPUT_LABELS))
+
+        # Checkbox
+        self.agree_checkbox = QCheckBox("All the details filled are correct and I agree with all the terms and conditions.")
+        self.agree_checkbox.setStyleSheet("color: white; font-size: 13px;")
+        form_layout.addWidget(self.agree_checkbox)
+
+        # Register Button
+        register_btn = QPushButton("Register")
+        register_btn.setStyleSheet( CSS_STYLE_FOR_FORM_BUTTONS )
+        register_btn.clicked.connect(self.validate_inputs)
+        form_layout.addWidget(register_btn)
+
+        form_widget = QWidget()
+        form_widget.setLayout(form_layout)
+        form_widget.setStyleSheet(CSS_STYLE_FOR_INPUT_BOX)
+
+        layout.addWidget(form_widget)
+        self.setLayout(layout)
+
+    def _labeled_widget(self, label_text, widget, label_style):
+        container = QVBoxLayout()
+        label = QLabel(label_text)
+        label.setStyleSheet(label_style)
+        container.addWidget(label)
+        container.addWidget(widget)
+        box = QWidget()
+        box.setLayout(container)
+        return box
+
+    def validate_inputs(self):
+        fname = self.first_name.text().strip()
+        lname = self.last_name.text().strip()
+        email = self.email.text().strip()
+        question = self.security_question.currentText()
+        answer = self.security_answer.text().strip()
+        aadhar = self.aadhar.text().strip()
+        agreed = self.agree_checkbox.isChecked()
+
+        if not all([fname, lname, email, question, answer, aadhar]):
+            QMessageBox.warning(self, "Incomplete", "Please fill out all fields.")
+            return
+
+        if not aadhar.isdigit() or len(aadhar) != 12:
+            QMessageBox.critical(self, "Invalid Aadhar", "Aadhar number must be exactly 12 digits.")
+            return
+
+        if not agreed:
+            QMessageBox.warning(self, "Agreement Required", "You must agree to the terms and conditions.")
+            return
+
+        QMessageBox.information(self, "Success", "Candidate registered successfully!")

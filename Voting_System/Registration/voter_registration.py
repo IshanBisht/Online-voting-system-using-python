@@ -1,133 +1,121 @@
 
 from Voting_System.base.base import *
 
-class VoterRegistration:
-    def __init__(self, root):
-        self.window = root
-        self.window.title("Voter SignIn")
-        screen_width=self.window.winfo_screenwidth()
-        screen_height=self.window.winfo_screenheight()
-        self.window.geometry(f"{screen_width}x{screen_height}+0+0")
+class VoterRegistration(QWidget):
+    FIXED_WIDTH = 600
 
-        self.window.config(bg="white")
-        
-        
-        self.bg_img = ImageTk.PhotoImage(file="Images/photo1.jpeg")
-        background = Label(self.window, image=self.bg_img).place(x=0, y=0, relwidth=1, relheight=1)
+    def __init__(self):
+        super().__init__()
 
-        self.f=Frame(self.window,bg="green2")
-        self.f.place(x=8,y=8,width=120,height=50)
-        self.bck_button = Button(self.f, text="Back", command=self.bck_button, font=("times new roman", 18, "bold"), bd=0, cursor="hand2", bg="green2", fg="white").place(x=10, y=10, width=80)
+        self.setWindowTitle( TITLE_VOTER_REGISTRATION_PAGE )
+        self.setWindowIcon( ovs_app_config.getIcon() )
+        self.setStyleSheet( CSS_STYLE_FOR_WIDGETS )
 
-        self.fi=Frame(self.window,bg="green2")
-        self.fi.place(x=130,y=8,width=120,height=50)
-        self.log_button = Button(self.fi, text="LogIn", command=self.log_button, font=("times new roman", 18, "bold"), bd=0, cursor="hand2", bg="green2", fg="white").place(x=10, y=10, width=80)
+        self.resize_to_screen()
+        self.center_window()
+        self.setup_ui()
 
-        
+    def resize_to_screen(self):
+        screen = ovs_app_config.getScreen()
+        self.FIXED_HEIGHT = int(screen.height() * 0.7)
+        self.setFixedSize(self.FIXED_WIDTH, self.FIXED_HEIGHT)
 
+    def center_window(self):
+        screen = ovs_app_config.getScreen()
+        x = (screen.width() - self.FIXED_WIDTH) // 2
+        y = (screen.height() - self.FIXED_HEIGHT) // 2
+        self.setGeometry(QRect(x, y, self.FIXED_WIDTH, self.FIXED_HEIGHT))
 
-        frame = Frame(self.window, bg="white")
-        frame.place(x=350, y=100, width=500, height=550)
+    def setup_ui(self):
+        layout = QVBoxLayout()
+        layout.setAlignment( Qt.AlignmentFlag.AlignTop )
+        layout.setContentsMargins(30, 20, 30, 20)
+        layout.setSpacing(15)
 
-        title1 = Label(frame, text="Voter SignIn", font=("times new roman", 25, "bold"), bg="white").place(x=20, y=10)
-        title2 = Label(frame, text="Join with us", font=("times new roman", 13), bg="white", fg="gray").place(x=20, y=50)
+        heading = QLabel("Voter Registration")
+        heading.setAlignment( Qt.AlignmentFlag.AlignCenter )
+        heading.setFont(QFont("Arial", 24, QFont.Bold))
+        heading.setStyleSheet("color: white; margin-bottom: 20px;")
+        layout.addWidget(heading)
 
-        f_name = Label(frame, text="First name", font=("helvetica", 15, "bold"), bg="white").place(x=20, y=100)
-        l_name = Label(frame, text="Last name", font=("helvetica", 15, "bold"), bg="white").place(x=240, y=100)
+        form_layout = QVBoxLayout()
+        form_layout.setSpacing(18)
 
-        self.fname_txt = Entry(frame, font=("arial"))
-        self.fname_txt.place(x=20, y=130, width=200)
+        # First Name
+        self.first_name = QLineEdit()
+        form_layout.addWidget(self._labeled_widget("First Name", self.first_name, CSS_STYLE_FOR_INPUT_LABELS))
 
-        self.lname_txt = Entry(frame, font=("arial"))
-        self.lname_txt.place(x=240, y=130, width=200)
+        # Last Name
+        self.last_name = QLineEdit()
+        form_layout.addWidget(self._labeled_widget("Last Name", self.last_name, CSS_STYLE_FOR_INPUT_LABELS))
 
-        email = Label(frame, text="Email", font=("helvetica", 15, "bold"), bg="white").place(x=20, y=180)
+        # Security Question
+        self.security_question = QComboBox()
+        self.security_question.addItems([
+            "What's your pet name?",
+            "Who's your first teacher?",
+            "Where's your birthplace?",
+            "What's your favorite movie?"
+        ])
+        form_layout.addWidget(self._labeled_widget("Security Question", self.security_question, CSS_STYLE_FOR_INPUT_LABELS))
 
-        self.email_txt = Entry(frame, font=("arial"))
-        self.email_txt.place(x=20, y=210, width=420)
+        # Security Answer
+        self.security_answer = QLineEdit()
+        self.security_answer.setPlaceholderText("Write a valid answer of your security question")
+        form_layout.addWidget(self._labeled_widget("Answer to Security Question", self.security_answer, CSS_STYLE_FOR_INPUT_LABELS))
 
-        sec_question = Label(frame, text="Security questions", font=("helvetica", 15, "bold"), bg="white").place(x=20, y=260)
-        answer = Label(frame, text="Answer", font=("helvetica", 15, "bold"), bg="white").place(x=240, y=260)
+        # Aadhar Number
+        self.voterid = QLineEdit()
+        self.voterid.setMaxLength(10)
+        self.voterid.setPlaceholderText("Enter Valid Voter ID")
+        form_layout.addWidget(self._labeled_widget("Voter ID", self.voterid, CSS_STYLE_FOR_INPUT_LABELS))
 
-        self.questions = ttk.Combobox(frame, font=("helvetica", 13), state='readonly', justify=CENTER)
-        self.questions['values'] = ("Select", "What's your pet name?", "Your first teacher name", "Your birthplace", "Your favorite movie")
-        self.questions.place(x=20, y=290, width=200)
-        self.questions.current(0)
+        # Consent Checkbox
+        self.agree_checkbox = QCheckBox("All the details I filled are correct and also agree with terms and condition.")
+        self.agree_checkbox.setStyleSheet("color: white; font-size: 13px;")
+        form_layout.addWidget(self.agree_checkbox)
 
-        self.answer_txt = Entry(frame, font=("arial"))
-        self.answer_txt.place(x=240, y=290, width=200)
+        # Register Button
+        register_btn = QPushButton("Register")
+        register_btn.setStyleSheet(CSS_STYLE_FOR_FORM_BUTTONS)
+        register_btn.clicked.connect(self.validate_inputs)
+        form_layout.addWidget(register_btn)
 
-        self.terms = IntVar()
-        terms_and_con = Checkbutton(frame, text="I Agree The Terms & Conditions", variable=self.terms, onvalue=1, offvalue=0, bg="white", font=("times new roman", 12)).place(x=20, y=420)
-        self.signup = Button(frame, text="Sign Up", command=self.signup_func, font=("times new roman", 18, "bold"), bd=0, cursor="hand2", bg="green2", fg="white").place(x=120, y=470, width=250)
+        form_widget = QWidget()
+        form_widget.setLayout(form_layout)
+        form_widget.setStyleSheet(CSS_STYLE_FOR_INPUT_BOX)
 
-    def generate_user_id(self):
-        return ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(8))
+        layout.addWidget(form_widget)
+        self.setLayout(layout)
 
-    def generate_password(self):
-        characters = string.ascii_letters + string.digits + string.punctuation
-        password = ''.join(random.choice(characters) for i in range(5))
-        return password
+    def _labeled_widget(self, label_text, widget, label_style):
+        container = QVBoxLayout()
+        label = QLabel(label_text)
+        label.setStyleSheet(label_style)
+        container.addWidget(label)
+        container.addWidget(widget)
+        box = QWidget()
+        box.setLayout(container)
+        return box
 
-    def signup_func(self):
-        if self.fname_txt.get() == "" or self.lname_txt.get() == "" or self.email_txt.get() == "" or self.questions.get() == "Select" or self.answer_txt.get() == "":
-            messagebox.showerror("Error!", "Sorry!, All fields are required", parent=self.window)
-        elif self.terms.get() == 0:
-            messagebox.showerror("Error!", "Please Agree with our Terms & Conditions", parent=self.window)
-        else:
-            try:
-                connection = pymysql.connect(host=cr.host, user=cr.user, password=cr.password, database=cr.database)
-                cur = connection.cursor()
-                cur.execute("select * from voter_regist where email=%s", self.email_txt.get())
-                row = cur.fetchone()
+    def validate_inputs(self):
+        fname = self.first_name.text().strip()
+        lname = self.last_name.text().strip()
+        question = self.security_question.currentText()
+        answer = self.security_answer.text().strip()
+        voter_id = self.voterid.text().strip()
+        agreed = self.agree_checkbox.isChecked()
 
-                if row != None:
-                    messagebox.showerror("Error!", "The email id is already exists, please try again with another email id", parent=self.window)
-                else:
-                    user_id = self.generate_user_id()
-                    password = self.generate_password()
-                    cur.execute("insert into voter_regist(user_id, f_name, l_name, email, question, answer, password) values(%s, %s, %s, %s, %s, %s, %s)",
-                                (
-                                    user_id,
-                                    self.fname_txt.get(),
-                                    self.lname_txt.get(),
-                                    self.email_txt.get(),
-                                    self.questions.get(),
-                                    self.answer_txt.get(),
-                                    password
-                                ))
-                    connection.commit()
-                    connection.close()
-                    messagebox.showinfo("Congratulations!", f"Register Successful. Your User ID is: {user_id} and Password is: {password}", parent=self.window)
-                    self.reset_fields()
-            except Exception as es:
-                messagebox.showerror("Error!", f"Error due to {es}", parent=self.window)
+        if not all([fname, lname, question, answer, voter_id]):
+            QMessageBox.warning(self, "Incomplete", "Please fill out all fields.")
+            return
 
-    def reset_fields(self):
-        self.fname_txt.delete(0, END)
-        self.lname_txt.delete(0, END)
-        self.email_txt.delete(0, END)
-        self.questions.current(0)
-        self.answer_txt.delete(0, END)
+        if not ( len(voter_id) != 10 or voter_id.isalnum() ):
+            QMessageBox.critical(self, "Invalid Aadhar", "Aadhar number must be exactly 12 digits.")
+            return
 
-    def bck_button(self):
-        self.window.destroy()
-        import mai
-        root = Tk()
-        obj = mai.MainApp(root)
-        root.mainloop()
-    def log_button(self):
-        self.window.destroy()
-        import  Voting_System.Login.voter_login as voter_login
-        root = Tk()
-        obj =voter_login.login_page(root)
-        root.mainloop()
-     
+        if not agreed:
+            QMessageBox.warning(self, "Agreement Required", "You must agree to the terms and conditions.")
+            return
 
-
-    
-
-if __name__ == "__main__":
-    root = Tk()
-    obj = SignUp(root)
-    root.mainloop()
+        QMessageBox.information(self, "Success", "Voter registered successfully!")
