@@ -1,5 +1,3 @@
-from .base.base import *
-
 from .Registration.registration import *
 from .Login.login import *
 
@@ -11,7 +9,7 @@ class MainApp(QWidget):
         super().__init__()
         self.setWindowTitle("Online Voting System")
         self.setWindowIcon( ovs_app_config.getIcon() )
-        self.setStyleSheet(f"background-color: {COLOR_CODE_BACKGROUND};")
+        self.setStyleSheet( CSS_STYLE_FOR_WIDGETS )
         self.setFixedSize(self.FIXED_WIDTH, self.FIXED_HEIGHT)
         self.center_window()
 
@@ -21,17 +19,17 @@ class MainApp(QWidget):
         self.setup_ui()
 
     def center_window(self):
-        screen = QApplication.primaryScreen().availableGeometry()
+        screen = ovs_app_config.getScreen()
         x = (screen.width() - self.FIXED_WIDTH) // 2
         y = (screen.height() - self.FIXED_HEIGHT) // 2
         self.setGeometry(QRect(x, y, self.FIXED_WIDTH, self.FIXED_HEIGHT))
 
     def setup_ui(self):
         layout = QVBoxLayout()
-        layout.setAlignment(Qt.AlignCenter)
+        layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         heading = QLabel("Online Voting System")
-        heading.setAlignment(Qt.AlignCenter)
+        heading.setAlignment(Qt.AlignmentFlag.AlignCenter)
         heading.setFont( ovs_app_config.getHeadingFont() )
         heading.setStyleSheet("color: white;")
         layout.addWidget(heading)
