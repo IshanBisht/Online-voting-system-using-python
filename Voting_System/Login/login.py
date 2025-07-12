@@ -31,23 +31,21 @@ class LoginWindow(QWidget):
         layout = QVBoxLayout()
         layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        heading = QLabel(TITLE_LOGIN_PAGE)
-        heading.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        heading.setFont( ovs_app_config.getHeadingFont() )
-        heading.setStyleSheet(CSS_STYLE_FOR_TOP_HEADING)
-        layout.addWidget(heading)
+        layout.addWidget( ovs_app_config.createHeading( TITLE_LOGIN_PAGE) )
 
         layout.addSpacing(40)
 
-
         btn_admin = QPushButton(TITLE_ADMIN_LOGIN_PAGE)
         btn_admin.setStyleSheet(CSS_STYLE_FOR_BUTTONS)
+        btn_admin.clicked.connect( self.admin_login.show )
 
         btn_candidate = QPushButton(TTILE_CANDIDATE_LOGIN_PAGE)
         btn_candidate.setStyleSheet(CSS_STYLE_FOR_BUTTONS)
+        btn_candidate.clicked.connect( self.candidate_login.show )
 
         btn_voter = QPushButton(TITLE_VOTER_LOGIN_PAGE)
         btn_voter.setStyleSheet(CSS_STYLE_FOR_BUTTONS)
+        btn_voter.clicked.connect( self.voter_login.show )
 
         layout.addWidget(btn_admin)
         layout.addSpacing(15)
