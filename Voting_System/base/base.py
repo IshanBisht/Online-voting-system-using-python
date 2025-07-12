@@ -83,9 +83,18 @@ class AppConfigs :
 
     def prepare( self ) -> None :
         self.icon = QIcon( PATH_TO_APP_ICON )
-        self.heading_font = QFont("Arial", 22, QFont.Bold)
-        self.button_font = QFont("Arial", 22, QFont.Bold)
+        self.heading_font = QFont("Arial", 24, QFont.Weight.Bold)
+        self.button_font = QFont("Arial", 22, QFont.Weight.Bold)
         self.screen = QApplication.primaryScreen().size()
+
+
+
+    def createHeading( self, title : str ) -> QLabel :
+        heading = QLabel( title )
+        heading.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        heading.setFont( self.getHeadingFont() )
+        heading.setStyleSheet( CSS_STYLE_FOR_TOP_HEADING )
+        return heading
 
 
 
