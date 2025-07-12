@@ -1,4 +1,4 @@
-from Voting_System.voting import *
+from Voting_System import *
 
 if __name__ == "__main__":
 
