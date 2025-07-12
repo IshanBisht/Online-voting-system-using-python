@@ -31,11 +31,6 @@ class CandidateRegistration(QWidget):
         layout.setContentsMargins(30, 20, 30, 20)
         layout.setSpacing(15)
 
-        # heading = QLabel(TITLE_CANDIDATE_REGISTRATION_PAGE)
-        # heading.setAlignment( Qt.AlignmentFlag.AlignCenter )
-        # heading.setFont( ovs_app_config.getHeadingFont() )
-        # heading.setStyleSheet( CSS_STYLE_FOR_TOP_HEADING )
-        # layout.addWidget(heading)
         layout.addWidget( ovs_app_config.createHeading( TITLE_CANDIDATE_REGISTRATION_PAGE) )
 
         form_layout = QVBoxLayout()
