@@ -1,92 +1,100 @@
-from tkinter import *
-from tkinter import ttk
-from tkinter import messagebox
+from Voting_System.base.base import *
 
-import pymysql
-import Voting_System.base.credentials as cr
+class CandidateLogin(QWidget):
+    FIXED_WIDTH = 500
+    FIXED_HEIGHT = 500
 
-class CandidateLogin:
-    def __init__(self, root):
-        self.window = root
-        self.window.title("Candidate Login")
-        screen_width=self.window.winfo_screenwidth()
-        screen_height=self.window.winfo_screenheight()
-        self.window.geometry(f"{screen_width}x{screen_height}+0+0")
+    def __init__(self):
+        super().__init__()
 
-        self.window.config(bg="white")
+        self.setWindowTitle( TTILE_CANDIDATE_LOGIN_PAGE )
+        self.setWindowIcon( ovs_app_config.getIcon() )
+        self.setStyleSheet( CSS_STYLE_FOR_WIDGETS )
 
-        self.frame1 = Frame(self.window, bg="yellow")
-        self.frame1.place(x=0, y=0, width=450, relheight=1)
+        self.setFixedSize(self.FIXED_WIDTH, self.FIXED_HEIGHT)
+        self.center_window()
+        self.setup_ui()
 
-        self.bck_button = Button(self.frame1, text="Back", command=self.bck_button, font=("times new roman", 18, "bold"), bd=0, cursor="hand2", bg="green2", fg="white").place(x=20, y=20, width=120)
 
-        Label(self.frame1, text="Election", font=("times new roman", 40, "bold"), bg="yellow", fg="red").place(x=0, y=300)
-        label2 = Label(self.frame1, text="Campaign", font=("times new roman", 40, "bold"), bg="yellow", fg="RoyalBlue1").place(x=185, y=300)
-        label3 = Label(self.frame1, text="It's all about the right choices and futures", font=("times new roman", 13, "bold"), bg="yellow", fg="brown4").place(x=100, y=360)
+    def center_window(self):
+        screen = ovs_app_config.getScreen()
+        x = (screen.width() - self.FIXED_WIDTH) // 2
+        y = (screen.height() - self.FIXED_HEIGHT) // 2
+        self.setGeometry(QRect(x, y, self.FIXED_WIDTH, self.FIXED_HEIGHT))
 
-        self.frame2 = Frame(self.window, bg="gray95")
-        self.frame2.place(x=450, y=0, relwidth=1, relheight=1)
+    def setup_ui(self):
+        layout = QVBoxLayout()
+        layout.setAlignment(Qt.AlignmentFlag.AlignTop)
+        layout.setContentsMargins(30, 20, 30, 20)
+        layout.setSpacing(20)
 
-        self.frame3 = Frame(self.frame2, bg="white")
-        self.frame3.place(x=140, y=150, width=500, height=450)
+        layout.addWidget( ovs_app_config.createHeading( TTILE_CANDIDATE_LOGIN_PAGE) )
 
-        self.id_label = Label(self.frame3, text="User ID", font=("helvetica", 20, "bold"), bg="white", fg="gray").place(x=50, y=40)
-        self.id_entry = Entry(self.frame3, font=("times new roman", 15, "bold"), bg="white", fg="gray")
-        self.id_entry.place(x=50, y=80, width=300)
+        form_layout = QVBoxLayout()
+        form_layout.setSpacing(18)
 
-        self.password_label = Label(self.frame3, text="Password", font=("helvetica", 20, "bold"), bg="white", fg="gray").place(x=50, y=140)
-        self.password_entry = Entry(self.frame3, font=("times new roman", 15, "bold"), bg="white", fg="gray", show='*')
-        self.password_entry.place(x=50, y=180, width=300)
+        # candidate ID
+        self.candidate_id = QLineEdit()
+        self.candidate_id.setPlaceholderText("Enter Candidate ID")
+        form_layout.addWidget(self._labeled_widget("Candidate ID", self.candidate_id, CSS_STYLE_FOR_INPUT_LABELS ))
 
-        self.login_button = Button(self.frame3, text="Log In", command=self.login_func, font=("times new roman", 15, "bold"), bd=0, cursor="hand2", bg="blue", fg="white").place(x=50, y=240, width=300)
+        # Password
+        self.password = QLineEdit()
+        self.password.setEchoMode(QLineEdit.EchoMode.Password)
+        self.password.setPlaceholderText("Enter Password")
+        form_layout.addWidget(self._labeled_widget("Password", self.password, CSS_STYLE_FOR_INPUT_LABELS ))
 
-        self.forgotten_pass = Button(self.frame3, text="Forgotten password?", command=self.forgot_func, font=("times new roman", 10, "bold"), bd=0, cursor="hand2", bg="white", fg="blue").place(x=125, y=300, width=150)
+        # Login Button
+        login_btn = QPushButton("Login")
+        login_btn.setStyleSheet( CSS_STYLE_FOR_FORM_BUTTONS )
+        login_btn.clicked.connect(self.validate_login)
+        form_layout.addSpacing(30)
+        form_layout.addWidget(login_btn)
 
-        self.create_button = Button(self.frame3, text="Create New Account", command=self.redirect_window, font=("times new roman", 18, "bold"), bd=0, cursor="hand2", bg="green2", fg="white").place(x=80, y=360, width=250)
+        create_account_btn = QPushButton("REGISTER A NEW CANDIDATE ACCOUNT")
+        create_account_btn.setStyleSheet("""
+            QPushButton {
+                background-color: transparent;
+                color: white;
+                font-size: 14px;
+                font-weight: bold;
+                text-decoration: underline;
+                border: none;
+            }
+            QPushButton:hover {
+                color: #d0dfff;
+            }
+        """)
+        create_account_btn.clicked.connect(self.create_account_clicked)
+        form_layout.addWidget(create_account_btn)
 
-    def login_func(self):
-        if self.id_entry.get() == "" or self.password_entry.get() == "":
-            messagebox.showerror("Error!", "All fields are required", parent=self.window)
-        else:
-            try:
-                connection = pymysql.connect(host=cr.host, user=cr.user, password=cr.password, database=cr.database)
-                cur = connection.cursor()
-                cur.execute("select * from candidate_regist where user_id=%s and password=%s", (self.id_entry.get(), self.password_entry.get()))
-                row = cur.fetchone()
-                if row is None:
-                    messagebox.showerror("Error!", "Invalid User ID or Password", parent=self.window)
-                else:
-                    messagebox.showinfo("Success", "Login Successful", parent=self.window)
-                    self.open_dashboard(self.id_entry.get())  # Pass the user_id to open_dashboard
-                connection.close()
-            except Exception as es:
-                messagebox.showerror("Error!", f"Error due to {es}", parent=self.window)
+        form_widget = QWidget()
+        form_widget.setLayout(form_layout)
+        form_widget.setStyleSheet( CSS_STYLE_FOR_INPUT_BOX )
 
-    def open_dashboard(self, user_id):
-        self.window.destroy()
-        import Voting_System.interface.CandidateDashboard as CandidateDashboard
-        root = Tk()
-        obj = CandidateDashboard.CandidateDashboard(root, user_id)  # Pass the user_id to CandidateDashboard
-        root.mainloop()
+        layout.addWidget(form_widget)
+        self.setLayout(layout)
 
-    def forgot_func(self):
-        messagebox.showinfo("Info", "Forgotten password functionality is not implemented yet", parent=self.window)
+    def _labeled_widget(self, label_text, widget, label_style):
+        container = QVBoxLayout()
+        label = QLabel(label_text)
+        label.setStyleSheet(label_style)
+        container.addWidget(label)
+        container.addWidget(widget)
+        box = QWidget()
+        box.setLayout(container)
+        return box
 
-    def redirect_window(self):
-        self.window.destroy()
-        import Voting_System.interface.CandidateSignUp as CandidateSignUp  # Ensure this file is named candidate_signup.py
-        root = Tk()
-        obj = CandidateSignUp.CandidateSignUp(root)
-        root.mainloop()
+    def validate_login(self):
+        candidate_id = self.candidate_id.text().strip()
+        password = self.password.text().strip()
 
-    def bck_button(self):
-        self.window.destroy()
-        import mai  # Ensure this file is named mai.py
-        root = Tk()
-        obj = mai.MainApp(root)
-        root.mainloop()
+        if not candidate_id or not password:
+            QMessageBox.warning(self, "Incomplete", "Please enter both Candidate ID and Password.")
+            return
 
-if __name__ == "__main__":
-    root = Tk()
-    obj = CandidateLogin(root)
-    root.mainloop()
+        # Placeholder success message
+        QMessageBox.information(self, "Login Successful", f"Welcome, {candidate_id}!")
+
+    def create_account_clicked(self): pass
+        # QMessageBox.information(self, "Redirect", "Redirecting to candidate Registration Page...")
