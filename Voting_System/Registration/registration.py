@@ -39,11 +39,7 @@ class RegistrationWindow(QWidget):
         layout = QVBoxLayout()
         layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        heading = QLabel(TITLE_REGISTRATION_PAGE)
-        heading.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        heading.setFont( ovs_app_config.getHeadingFont() )
-        heading.setStyleSheet(CSS_STYLE_FOR_TOP_HEADING)
-        layout.addWidget(heading)
+        layout.addWidget( ovs_app_config.createHeading( TITLE_REGISTRATION_PAGE ) )
 
         layout.addSpacing(40)
 

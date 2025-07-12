@@ -28,11 +28,7 @@ class MainApp(QWidget):
         layout = QVBoxLayout()
         layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        heading = QLabel("Online Voting System")
-        heading.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        heading.setFont( ovs_app_config.getHeadingFont() )
-        heading.setStyleSheet("color: white;")
-        layout.addWidget(heading)
+        layout.addWidget( ovs_app_config.createHeading( TITLE_MAIN_PAGE ) )
 
         layout.addSpacing(40)
 

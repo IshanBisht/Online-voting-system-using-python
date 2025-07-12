@@ -32,11 +32,7 @@ class VoterRegistration(QWidget):
         layout.setContentsMargins(30, 20, 30, 20)
         layout.setSpacing(15)
 
-        heading = QLabel("Voter Registration")
-        heading.setAlignment( Qt.AlignmentFlag.AlignCenter )
-        heading.setFont(QFont("Arial", 24, QFont.Bold))
-        heading.setStyleSheet("color: white; margin-bottom: 20px;")
-        layout.addWidget(heading)
+        layout.addWidget( ovs_app_config.createHeading( TITLE_VOTER_REGISTRATION_PAGE ) )
 
         form_layout = QVBoxLayout()
         form_layout.setSpacing(18)
