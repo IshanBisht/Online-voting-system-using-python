@@ -13,8 +13,8 @@ class MainApp(QWidget):
         self.setFixedSize(self.FIXED_WIDTH, self.FIXED_HEIGHT)
         self.center_window()
 
-        self.registration_window = None
-        self.login_window = None
+        self.registration_window = RegistrationWindow()
+        self.login_window = LoginWindow()
 
         self.setup_ui()
 
@@ -48,22 +48,19 @@ class MainApp(QWidget):
 
         btn_registration = QPushButton("Registration")
         btn_registration.setStyleSheet(btn_style)
-        btn_registration.clicked.connect(self.open_registration)
+        btn_registration.clicked.connect( self.registration_window.show)
 
         btn_login = QPushButton("Login")
         btn_login.setStyleSheet(btn_style)
-        btn_login.clicked.connect(self.open_login)
+        btn_login.clicked.connect( self.login_window.show )
 
         layout.addWidget(btn_registration)
         layout.addSpacing(20)
         layout.addWidget(btn_login)
 
         self.setLayout(layout)
-
-    def open_registration(self):
-        self.registration_window = RegistrationWindow()
-        self.registration_window.show()
-
-    def open_login(self):
-        self.login_window = LoginWindow()
-        self.login_window.show()
+    
+    def closeEvent(self , event : QCloseEvent) -> None:
+        self.registration_window.close()
+        self.login_window.close()
+        event.accept()

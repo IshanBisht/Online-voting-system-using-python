@@ -45,11 +45,11 @@ class RegistrationWindow(QWidget):
 
         btn_candidate = QPushButton(RegistrationWindow.BUTTON_TITLE_CANDIDATE_REGISTRATION)
         btn_candidate.setStyleSheet(CSS_STYLE_FOR_BUTTONS)
-        btn_candidate.clicked.connect( self.launch_candidate_registration )
+        btn_candidate.clicked.connect( self.candidate_registration.show )
 
         btn_voter = QPushButton(RegistrationWindow.BUTTON_TITLE_VOTER_REGISTRATION)
         btn_voter.setStyleSheet(CSS_STYLE_FOR_BUTTONS)
-        btn_voter.clicked.connect( self.launch_voter_registration )
+        btn_voter.clicked.connect( self.voter_registration.show )
 
         layout.addWidget(btn_candidate)
         layout.addSpacing(20)
@@ -57,12 +57,9 @@ class RegistrationWindow(QWidget):
 
         self.setLayout(layout)
 
+    
+    def closeEvent(self , event : QCloseEvent) -> None:
+        self.candidate_registration.close()
+        self.voter_registration.close()
 
- 
-    def launch_candidate_registration( self ) :
-        self.candidate_registration.show()
-
-
-
-    def launch_voter_registration( self ) :
-        self.voter_registration.show()
+        event.accept()

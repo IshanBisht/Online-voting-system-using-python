@@ -54,3 +54,10 @@ class LoginWindow(QWidget):
         layout.addWidget(btn_voter)
 
         self.setLayout(layout)
+    
+    def closeEvent(self , event : QCloseEvent) -> None:
+        self.admin_login.close()
+        self.voter_login.close()
+        self.candidate_login.close()
+
+        event.accept
