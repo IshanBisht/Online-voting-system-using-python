@@ -58,6 +58,7 @@ CSS_STYLE_FOR_INPUT_BOX = """
         border-radius: 6px;
         border: 1px solid #ccc;
         font-size: 15px;
+        font-weight: bold;
         background-color:white;
         color:black
     }
