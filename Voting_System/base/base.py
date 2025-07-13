@@ -1,4 +1,4 @@
-from .imports import *
+from .data_manager import *
 
 PATH_TO_MAIN_PAGE_BACKGROUND_IMAGE = "Images/background.jpg"
 PATH_TO_APP_ICON                   = "Images/icon.png"
