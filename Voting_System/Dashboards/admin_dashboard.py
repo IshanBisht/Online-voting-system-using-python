@@ -3,7 +3,7 @@ from tkinter import filedialog, ttk, messagebox
 from PIL import Image, ImageTk
 import mysql.connector
 import pymysql
-import Voting_System.base.credentials as cr
+import Voting_System.base.variables as cr
 
 def fetch_admin_id():
     return "Admin123"

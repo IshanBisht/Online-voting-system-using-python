@@ -2,7 +2,7 @@ from tkinter import *
 from tkinter import ttk, messagebox
 from PIL import Image, ImageTk
 import mysql.connector
-import Voting_System.base.credentials as cr
+import Voting_System.base.variables as cr
 
 class VoterDashboard:
     def __init__(self, root, user_id):
