@@ -34,6 +34,7 @@ class AdminLogin(QWidget):
 
         # Admin ID
         self.admin_id = QLineEdit()
+        self.admin_id.setValidator( QIntValidator() )
         self.admin_id.setPlaceholderText("Enter Admin ID")
         form_layout.addWidget(self._labeled_widget("Admin ID", self.admin_id, CSS_STYLE_FOR_INPUT_LABELS ))
 

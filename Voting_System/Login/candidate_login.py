@@ -35,6 +35,7 @@ class CandidateLogin(QWidget):
 
         # candidate ID
         self.candidate_id = QLineEdit()
+        self.candidate_id.setValidator( QIntValidator() )
         self.candidate_id.setPlaceholderText("Enter Candidate ID")
         form_layout.addWidget(self._labeled_widget("Candidate ID", self.candidate_id, CSS_STYLE_FOR_INPUT_LABELS ))
 
