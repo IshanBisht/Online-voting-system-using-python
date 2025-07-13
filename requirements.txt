@@ -1,6 +1,2 @@
-pillow==11.3.0;
-pymysql==1.1.1;
 pyqt5==5.15.11;
-mai==0.0.3;
-tensorboardx==2.6.4;
-flyai==0.0.2;
+mysql-connector-python==9.3.0;
