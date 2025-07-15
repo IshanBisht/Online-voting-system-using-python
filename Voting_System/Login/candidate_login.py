@@ -28,7 +28,7 @@ class CandidateLogin(QWidget):
         layout.setContentsMargins(30, 20, 30, 20)
         layout.setSpacing(20)
 
-        layout.addWidget( ovs_app_config.createHeading( TTILE_CANDIDATE_LOGIN_PAGE) )
+        layout.addLayout( ovs_app_config.createHeading( TTILE_CANDIDATE_LOGIN_PAGE) )
 
         form_layout = QVBoxLayout()
         form_layout.setSpacing(18)

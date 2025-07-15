@@ -31,7 +31,7 @@ class LoginWindow(QWidget):
         layout = QVBoxLayout()
         layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        layout.addWidget( ovs_app_config.createHeading( TITLE_LOGIN_PAGE) )
+        layout.addLayout( ovs_app_config.createHeading( TITLE_LOGIN_PAGE) )
 
         layout.addSpacing(40)
 

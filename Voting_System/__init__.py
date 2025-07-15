@@ -18,17 +18,21 @@ class MainApp(QWidget):
 
         self.setup_ui()
 
+
+
     def center_window(self):
         screen = ovs_app_config.getScreen()
         x = (screen.width() - self.FIXED_WIDTH) // 2
         y = (screen.height() - self.FIXED_HEIGHT) // 2
         self.setGeometry(QRect(x, y, self.FIXED_WIDTH, self.FIXED_HEIGHT))
 
+
+
     def setup_ui(self):
         layout = QVBoxLayout()
         layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        layout.addWidget( ovs_app_config.createHeading( TITLE_MAIN_PAGE ) )
+        layout.addLayout( ovs_app_config.createHeading( TITLE_MAIN_PAGE ) )
 
         layout.addSpacing(40)
 
@@ -60,6 +64,8 @@ class MainApp(QWidget):
 
         self.setLayout(layout)
     
+
+
     def closeEvent(self , event : QCloseEvent) -> None:
         self.registration_window.close()
         self.login_window.close()
