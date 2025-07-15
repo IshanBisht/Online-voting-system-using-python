@@ -15,22 +15,22 @@ try :
 
     print("\n |>> Libraries installed succesfully <<|")
 
-    db_user     = input("\n ==> Please enter your MySQL username (DEFAULT='root') :- ")
+    db_user     = input("\n ==> Please enter your MySQL username (DEFAULT='root') :- ").strip()
     db_password = input(" ==> Please enter password :- ")
 
     # saving the information
-    with open("Voting_System\\base\\info.data", 'w') as info_file :
+    with open("Voting_System\\base\\variables\\info.data", 'w') as info_file :
         info_file.write(db_user)
         info_file.write('\n')
         info_file.write(db_password)
 
-    import mysql.connector
-    from Voting_System.base.db_variables import *
+    import pymysql
+    from Voting_System.base.variables.db_variables import *
 
     print("\n |>> Setting up the database <<|")
 
     try :
-        conn = mysql.connector.connect(
+        conn = pymysql.connect(
             host= OVS_HOST,
             user= OVS_USER,
             password= OVS_PASSWORD
@@ -44,8 +44,10 @@ try :
         cursor.close()
         conn.close()
 
+        print("\n >> Database created!! <<")
+
         # Connect to the VotingSystem database
-        conn = mysql.connector.connect(
+        conn = pymysql.connect(
                 host=OVS_HOST,
                 user=OVS_USER,
                 password=OVS_PASSWORD,
@@ -99,12 +101,12 @@ try :
 
         print("\n |>> Database setup Done! <<|")
 
-    except mysql.connector.Error as excep :
-        print("\n MySQL Exception: ", excep)
+    except pymysql.Error as excep :
+        print("\n =| MySQL Exception: ", excep)
         failedOperation()
 
 except Exception as excep :
-    print("\n Exception caught: ", excep)
+    print("\n =| Exception caught: ", excep)
     failedOperation()
 
 print( """
