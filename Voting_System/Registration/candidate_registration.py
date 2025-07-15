@@ -1,7 +1,8 @@
 from Voting_System.base.base import *
 
 class CandidateRegistration(QWidget):
-    FIXED_WIDTH = 600
+    FIXED_WIDTH = 650
+    FIXED_HEIGHT = 750
 
     def __init__(self):
         super().__init__()
@@ -10,14 +11,10 @@ class CandidateRegistration(QWidget):
         self.setWindowIcon( ovs_app_config.getIcon() )
         self.setStyleSheet(CSS_STYLE_FOR_WIDGETS)
 
-        self.resize_to_screen( )
+        self.setFixedSize(self.FIXED_WIDTH, self.FIXED_HEIGHT)
         self.center_window( )
         self.setup_ui()
 
-    def resize_to_screen( self ) -> None:
-        screen = ovs_app_config.getScreen()
-        self.FIXED_HEIGHT = int(screen.height() * 0.8)  # use 80% of screen height
-        self.setFixedSize(self.FIXED_WIDTH, self.FIXED_HEIGHT)
 
     def center_window( self ) -> None:
         screen = ovs_app_config.getScreen()
@@ -31,45 +28,46 @@ class CandidateRegistration(QWidget):
         layout.setContentsMargins(30, 20, 30, 20)
         layout.setSpacing(15)
 
-        layout.addWidget( ovs_app_config.createHeading( TITLE_CANDIDATE_REGISTRATION_PAGE) )
+        layout.addLayout( ovs_app_config.createHeading( TITLE_CANDIDATE_REGISTRATION_PAGE) )
 
         form_layout = QVBoxLayout()
         form_layout.setSpacing(18)
 
+        # Aadhar Number
+        self.aadhar = QLineEdit()
+        self.aadhar.setValidator(QIntValidator())
+        self.aadhar.setMaxLength(12)
+        self.aadhar.setPlaceholderText("Enter 12-digit Aadhar Number")
+        self.aadhar.setStyleSheet( CSS_STYLE_FOR_INPUT_BOX )
+        form_layout.addWidget(self._labeled_widget("Aadhar Number", self.aadhar, CSS_STYLE_FOR_INPUT_LABELS))
 
         # First Name
         self.first_name = QLineEdit()
+        self.first_name.setValidator( ovs_app_config.getAlphabetValidator() )
+        self.first_name.setPlaceholderText("First Name")
+        self.first_name.setStyleSheet( CSS_STYLE_FOR_INPUT_BOX )
         form_layout.addWidget(self._labeled_widget("First Name", self.first_name, CSS_STYLE_FOR_INPUT_LABELS))
 
         # Last Name
         self.last_name = QLineEdit()
+        self.last_name.setValidator( ovs_app_config.getAlphabetValidator() )
+        self.last_name.setPlaceholderText("Last Name")
+        self.last_name.setStyleSheet( CSS_STYLE_FOR_INPUT_BOX )
         form_layout.addWidget(self._labeled_widget("Last Name", self.last_name, CSS_STYLE_FOR_INPUT_LABELS))
 
-        # Email
-        self.email = QLineEdit()
-        self.email.setPlaceholderText("Enter a valid email")
-        form_layout.addWidget(self._labeled_widget("Email", self.email, CSS_STYLE_FOR_INPUT_LABELS))
+        # place
+        self.place = QLineEdit()
+        self.place.setValidator( ovs_app_config.getAlphabetValidator() )
+        self.place.setPlaceholderText("Place from where you are standing for election")
+        self.place.setStyleSheet( CSS_STYLE_FOR_INPUT_BOX )
+        form_layout.addWidget(self._labeled_widget("Place", self.place, CSS_STYLE_FOR_INPUT_LABELS))
 
-        # Security Question
-        self.security_question = QComboBox()
-        self.security_question.addItems([
-            "What's your pet name?",
-            "Who's your first teacher?",
-            "Where's your birthplace?",
-            "What's your favorite movie?"
-        ])
-        form_layout.addWidget(self._labeled_widget("Security Question", self.security_question, CSS_STYLE_FOR_INPUT_LABELS))
-
-        # Answer to security question
-        self.security_answer = QLineEdit()
-        self.security_answer.setPlaceholderText("Write a valid answer of your security question")
-        form_layout.addWidget(self._labeled_widget("Answer to Security Question", self.security_answer, CSS_STYLE_FOR_INPUT_LABELS))
-
-        # Aadhar Number
-        self.aadhar = QLineEdit()
-        self.aadhar.setMaxLength(12)
-        self.aadhar.setPlaceholderText("Enter 12-digit Aadhar Number")
-        form_layout.addWidget(self._labeled_widget("Aadhar Number", self.aadhar, CSS_STYLE_FOR_INPUT_LABELS))
+        # Password
+        self.password = QLineEdit()
+        self.password.setEchoMode(QLineEdit.EchoMode.Password)
+        self.password.setPlaceholderText("Enter Password")
+        self.password.setStyleSheet( CSS_STYLE_FOR_INPUT_BOX )
+        form_layout.addWidget(self._labeled_widget("Password", self.password, CSS_STYLE_FOR_INPUT_LABELS ))
 
         # Checkbox
         self.agree_checkbox = QCheckBox("All the details filled are correct and I agree with all the terms and conditions.")
@@ -100,24 +98,41 @@ class CandidateRegistration(QWidget):
         return box
 
     def validate_inputs(self):
-        fname = self.first_name.text().strip()
-        lname = self.last_name.text().strip()
-        email = self.email.text().strip()
-        question = self.security_question.currentText()
-        answer = self.security_answer.text().strip()
-        aadhar = self.aadhar.text().strip()
+        aadhar_num = self.aadhar.text()
+        fname = self.first_name.text()
+        lname = self.last_name.text()
+        election_place = self.place.text()
+        password_text = self.password.text()
         agreed = self.agree_checkbox.isChecked()
 
-        if not all([fname, lname, email, question, answer, aadhar]):
+        if not all([aadhar_num, fname, lname, election_place, password_text, agreed]):
             QMessageBox.warning(self, "Incomplete", "Please fill out all fields.")
             return
-
-        if not aadhar.isdigit() or len(aadhar) != 12:
+        
+        if len(aadhar_num) != 12 :
             QMessageBox.critical(self, "Invalid Aadhar", "Aadhar number must be exactly 12 digits.")
+            return
+
+        if len(fname) < 2 or len(lname) < 2 :
+            QMessageBox.critical( self, "Invalid Name", "First or Last name is too short!")
+            return
+        
+        if len(election_place) < 2 :
+            QMessageBox.critical( self, "Invalid Place", "The mentioned place's name is too short!")
+            return
+        
+        if len(password_text) <= 5 :
+            QMessageBox.critical( self, "Invalid Password" , "Password is too short. Minimum 6 characters are required!")
             return
 
         if not agreed:
             QMessageBox.warning(self, "Agreement Required", "You must agree to the terms and conditions.")
             return
+        
+        try :
+            ovs_data_manager.registerCandidate(int(aadhar_num), fname, lname, election_place, password_text)
 
-        QMessageBox.information(self, "Success", "Candidate registered successfully!")
+            QMessageBox.information(self, "Success", "Candidate registered successfully!")
+        
+        except Exception as excep:
+            QMessageBox.critical( self, "Error Found", "Cannot register the candidate because " + excep.__str__())

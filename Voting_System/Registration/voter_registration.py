@@ -3,6 +3,7 @@ from Voting_System.base.base import *
 
 class VoterRegistration(QWidget):
     FIXED_WIDTH = 600
+    FIXED_HEIGHT = 750
 
     def __init__(self):
         super().__init__()
@@ -11,14 +12,9 @@ class VoterRegistration(QWidget):
         self.setWindowIcon( ovs_app_config.getIcon() )
         self.setStyleSheet( CSS_STYLE_FOR_WIDGETS )
 
-        self.resize_to_screen()
+        self.setFixedSize(self.FIXED_WIDTH, self.FIXED_HEIGHT)
         self.center_window()
         self.setup_ui()
-
-    def resize_to_screen(self):
-        screen = ovs_app_config.getScreen()
-        self.FIXED_HEIGHT = int(screen.height() * 0.7)
-        self.setFixedSize(self.FIXED_WIDTH, self.FIXED_HEIGHT)
 
     def center_window(self):
         screen = ovs_app_config.getScreen()
@@ -32,39 +28,46 @@ class VoterRegistration(QWidget):
         layout.setContentsMargins(30, 20, 30, 20)
         layout.setSpacing(15)
 
-        layout.addWidget( ovs_app_config.createHeading( TITLE_VOTER_REGISTRATION_PAGE ) )
+        layout.addLayout( ovs_app_config.createHeading( TITLE_VOTER_REGISTRATION_PAGE ) )
 
         form_layout = QVBoxLayout()
         form_layout.setSpacing(18)
 
+        # Aadhar Number
+        self.aadhar = QLineEdit()
+        self.aadhar.setValidator(QIntValidator())
+        self.aadhar.setMaxLength(12)
+        self.aadhar.setPlaceholderText("Enter 12-digit Aadhar Number")
+        self.aadhar.setStyleSheet( CSS_STYLE_FOR_INPUT_BOX )
+        form_layout.addWidget(self._labeled_widget("Aadhar Number", self.aadhar, CSS_STYLE_FOR_INPUT_LABELS))
+        
         # First Name
         self.first_name = QLineEdit()
+        self.first_name.setPlaceholderText("First Name")
+        self.first_name.setValidator( ovs_app_config.getAlphabetValidator() )
+        self.first_name.setStyleSheet( CSS_STYLE_FOR_INPUT_BOX )
         form_layout.addWidget(self._labeled_widget("First Name", self.first_name, CSS_STYLE_FOR_INPUT_LABELS))
 
         # Last Name
         self.last_name = QLineEdit()
+        self.last_name.setPlaceholderText("Last Name")
+        self.last_name.setValidator( ovs_app_config.getAlphabetValidator() )
+        self.last_name.setStyleSheet( CSS_STYLE_FOR_INPUT_BOX )
         form_layout.addWidget(self._labeled_widget("Last Name", self.last_name, CSS_STYLE_FOR_INPUT_LABELS))
 
-        # Security Question
-        self.security_question = QComboBox()
-        self.security_question.addItems([
-            "What's your pet name?",
-            "Who's your first teacher?",
-            "Where's your birthplace?",
-            "What's your favorite movie?"
-        ])
-        form_layout.addWidget(self._labeled_widget("Security Question", self.security_question, CSS_STYLE_FOR_INPUT_LABELS))
+        # place
+        self.place = QLineEdit()
+        self.place.setPlaceholderText("Place from where you are standing for election")
+        self.place.setValidator( ovs_app_config.getAlphabetValidator() )
+        self.place.setStyleSheet( CSS_STYLE_FOR_INPUT_BOX )
+        form_layout.addWidget(self._labeled_widget("Place", self.place, CSS_STYLE_FOR_INPUT_LABELS))
 
-        # Security Answer
-        self.security_answer = QLineEdit()
-        self.security_answer.setPlaceholderText("Write a valid answer of your security question")
-        form_layout.addWidget(self._labeled_widget("Answer to Security Question", self.security_answer, CSS_STYLE_FOR_INPUT_LABELS))
-
-        # Aadhar Number
-        self.voterid = QLineEdit()
-        self.voterid.setMaxLength(10)
-        self.voterid.setPlaceholderText("Enter Valid Voter ID")
-        form_layout.addWidget(self._labeled_widget("Voter ID", self.voterid, CSS_STYLE_FOR_INPUT_LABELS))
+        # Password
+        self.password = QLineEdit()
+        self.password.setEchoMode(QLineEdit.EchoMode.Password)
+        self.password.setPlaceholderText("Enter Password")
+        self.password.setStyleSheet( CSS_STYLE_FOR_INPUT_BOX )
+        form_layout.addWidget(self._labeled_widget("Password", self.password, CSS_STYLE_FOR_INPUT_LABELS ))
 
         # Consent Checkbox
         self.agree_checkbox = QCheckBox("All the details I filled are correct and also agree with terms and condition.")
@@ -95,23 +98,42 @@ class VoterRegistration(QWidget):
         return box
 
     def validate_inputs(self):
+        aadhar_num = self.aadhar.text()
         fname = self.first_name.text().strip()
         lname = self.last_name.text().strip()
-        question = self.security_question.currentText()
-        answer = self.security_answer.text().strip()
-        voter_id = self.voterid.text().strip()
+        election_place = self.place.text()
+        password_text = self.password.text()
         agreed = self.agree_checkbox.isChecked()
 
-        if not all([fname, lname, question, answer, voter_id]):
+        if not all([aadhar_num, fname, lname, election_place, password_text]):
             QMessageBox.warning(self, "Incomplete", "Please fill out all fields.")
             return
 
-        if not ( len(voter_id) != 10 or voter_id.isalnum() ):
+        if len(aadhar_num) != 12 :
             QMessageBox.critical(self, "Invalid Aadhar", "Aadhar number must be exactly 12 digits.")
+            return
+        
+        if len(fname) < 2 or len(lname) < 2 :
+            QMessageBox.critical( self, "Invalid Name", "First or Last name is too short!")
+            return
+        
+        if len(election_place) < 2 :
+            QMessageBox.critical( self, "Invalid Place", "The mentioned place's name is too short!")
+            return
+        
+        if len(password_text) <= 5 :
+            QMessageBox.critical( self, "Invalid Password" , "Password is too short. Minimum 6 characters are required!")
             return
 
         if not agreed:
             QMessageBox.warning(self, "Agreement Required", "You must agree to the terms and conditions.")
             return
+        
+        try :
+            new_voter_id = ovs_data_manager.registerVoter(int(aadhar_num), fname, lname, password_text, election_place)
 
-        QMessageBox.information(self, "Success", "Voter registered successfully!")
+            QMessageBox.information(self, "Success", f"Voter registered successfully with ID '{new_voter_id}'")
+        
+        except Exception as excep :
+
+            QMessageBox.critical( self , "Error caught", "Cannot register the voter because " + excep.__str__())
