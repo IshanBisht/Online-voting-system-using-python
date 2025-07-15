@@ -129,10 +129,6 @@ class AppConfigs :
 
     def getScreen( self ) -> QSize : return self.screen
 
-    
-
-    def getAlphaNumValidator( self ) -> QRegularExpressionValidator : return QRegularExpressionValidator(QRegularExpression("^[a-zA-Z0-9]*$"))
-
 
 
     def getAlphabetValidator( self ) -> QRegularExpressionValidator : return QRegularExpressionValidator(QRegularExpression("^[a-zA-Z]*$"))
