@@ -1,0 +1,118 @@
+def failedOperation() -> None :
+    print( """ 
+           +--------------------------+
+           |    !! Setup Failed !!    |
+           +--------------------------+
+    """ )
+    exit(1)
+
+try :
+
+    from os import system
+
+    # installing all required libraries
+    if system("pip install -r requirements.txt") != 0 : failedOperation()
+
+    print("\n |>> Libraries installed succesfully <<|")
+
+    db_user     = input("\n ==> Please enter your MySQL username (DEFAULT='root') :- ")
+    db_password = input(" ==> Please enter password :- ")
+
+    # saving the information
+    with open("Voting_System\\base\\info.data", 'w') as info_file :
+        info_file.write(db_user)
+        info_file.write('\n')
+        info_file.write(db_password)
+
+    import mysql.connector
+    from Voting_System.base.db_variables import *
+
+    print("\n |>> Setting up the database <<|")
+
+    try :
+        conn = mysql.connector.connect(
+            host= OVS_HOST,
+            user= OVS_USER,
+            password= OVS_PASSWORD
+        )
+
+        cursor = conn.cursor()
+
+         # Create database if not exists
+        cursor.execute(f"CREATE DATABASE IF NOT EXISTS {OVS_DATABASE}")
+        conn.commit()
+        cursor.close()
+        conn.close()
+
+        # Connect to the VotingSystem database
+        conn = mysql.connector.connect(
+                host=OVS_HOST,
+                user=OVS_USER,
+                password=OVS_PASSWORD,
+                database=OVS_DATABASE
+        )
+        cursor = conn.cursor()
+
+        ADMIN_TABLE_CREATION_QUERY = f"""
+                CREATE TABLE IF NOT EXISTS {OVS_TABLE_ADMIN} (
+                    {OVS_COLUMN_ID} INT UNSIGNED PRIMARY KEY,
+                    {OVS_COLUMN_NAME} VARCHAR(255),
+                    {OVS_COLUMN_PLACE} VARCHAR(255),
+                    {OVS_COLUMN_PASSWORD} TEXT
+                );
+        """
+
+        CANDIDATE_TABLE_CREATION_QUERY = f"""
+            CREATE TABLE IF NOT EXISTS {OVS_TABLE_CANDIDATE} (
+                {OVS_COLUMN_AADHAR} BIGINT UNSIGNED PRIMARY KEY,
+                {OVS_COLUMN_FIRST_NAME} VARCHAR(255),
+                {OVS_COLUMN_LAST_NAME} VARCHAR(255),
+                {OVS_COLUMN_PLACE} VARCHAR(255),
+                {OVS_COLUMN_PASSWORD} TEXT,
+                {OVS_COLUMN_ID} INT UNSIGNED UNIQUE AUTO_INCREMENT,
+                {OVS_COLUMN_VOTE_COUNT} INT DEFAULT 0
+            ) AUTO_INCREMENT = { OVS_ID_START_FROM };
+        """
+
+        VOTER_TABLE_CREATION_QUERY = f"""
+            CREATE TABLE IF NOT EXISTS {OVS_TABLE_VOTER} (
+                {OVS_COLUMN_AADHAR} BIGINT UNSIGNED PRIMARY KEY,
+                {OVS_COLUMN_FIRST_NAME} VARCHAR(255),
+                {OVS_COLUMN_LAST_NAME} VARCHAR(255),
+                {OVS_COLUMN_PLACE} VARCHAR(255),
+                {OVS_COLUMN_PASSWORD} TEXT,
+                {OVS_COLUMN_ID} INT UNSIGNED UNIQUE AUTO_INCREMENT,
+                {OVS_COLUMN_VOTE_GIVEN} BOOLEAN DEFAULT FALSE
+            ) AUTO_INCREMENT = { OVS_ID_START_FROM };
+        """
+
+        # Create AdminTable
+        cursor.execute( ADMIN_TABLE_CREATION_QUERY )
+        # Create CandidateTable
+        cursor.execute( CANDIDATE_TABLE_CREATION_QUERY )
+        # Create VoterTable
+        cursor.execute( VOTER_TABLE_CREATION_QUERY )
+
+        conn.commit()
+        cursor.close()
+        conn.close()
+
+        print("\n |>> Database setup Done! <<|")
+
+    except mysql.connector.Error as excep :
+        print("\n MySQL Exception: ", excep)
+        failedOperation()
+
+except Exception as excep :
+    print("\n Exception caught: ", excep)
+    failedOperation()
+
+print( """
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        |    Congratulations !!     |
+        +===========================+
+       <||   OVS Setup Completed   ||>
+        +===========================+
+""")
+
+
