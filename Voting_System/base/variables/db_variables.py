@@ -1,6 +1,3 @@
-
-
-
 OVS_HOST      = "127.0.0.1"
 OVS_DATABASE  = "VotingSystem"
 
@@ -20,6 +17,6 @@ OVS_COLUMN_VOTE_GIVEN = "vote_given"
 
 OVS_ID_START_FROM     = 1000
 
-with open("Voting_System\\base\\info.data", 'r') as file :
-    OVS_USER      = file.readline()
+with open("Voting_System\\base\\variables\\info.data", 'r') as file :
+    OVS_USER      = file.readline().strip()
     OVS_PASSWORD  = file.readline()
