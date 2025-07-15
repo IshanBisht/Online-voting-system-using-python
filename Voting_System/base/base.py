@@ -1,45 +1,32 @@
 from .data_manager import *
 
-PATH_TO_MAIN_PAGE_BACKGROUND_IMAGE = "Images/background.jpg"
-PATH_TO_APP_ICON                   = "Images/icon.png"
-COLOR_CODE_BACKGROUND              = "#567DD0"
-TITLE_MAIN_PAGE                    = "Online Voting System"
 
-TITLE_REGISTRATION_PAGE            = "Register to OVS"
-TITLE_CANDIDATE_REGISTRATION_PAGE  = "Candidate Registration"
-TITLE_VOTER_REGISTRATION_PAGE      = "Voter Registration"
-
-TITLE_LOGIN_PAGE                   = "Login to OVS"
-TITLE_ADMIN_LOGIN_PAGE             = "Admin Login"
-TITLE_VOTER_LOGIN_PAGE             = "Voter Login"
-TTILE_CANDIDATE_LOGIN_PAGE         = "Candidate Login"
-
-CSS_STYLE_FOR_BUTTONS = """
-    QPushButton {
+CSS_STYLE_FOR_BUTTONS = f"""
+    QPushButton {{
         background-color: #ffffff;
-        color: #567DD0;
+        color: {COLOR_CODE_BACKGROUND};
         border-radius: 10px;
         font-size: 16px;
         font-weight: bold;
         padding: 10px 20px;
-    }
-    QPushButton:hover {
+    }}
+    QPushButton:hover {{
         background-color: #e8e8e8;
-    }
+    }}
 """
 
-CSS_STYLE_FOR_FORM_BUTTONS = """
-    QPushButton {
+CSS_STYLE_FOR_FORM_BUTTONS = f"""
+    QPushButton {{
         background-color: #ffffff;
-        color: #567DD0;
+        color: {COLOR_CODE_BACKGROUND};
         border-radius: 8px;
         font-size: 16px;
         font-weight: bold;
         padding: 12px 20px;
-    }
-    QPushButton:hover {
+    }}
+    QPushButton:hover {{
         background-color: #e0e0e0;
-    }
+    }}
 """
 
 CSS_STYLE_FOR_TOP_HEADING = """
@@ -90,16 +77,45 @@ class AppConfigs :
 
 
 
-    def createHeading( self, title : str ) -> QLabel :
-        heading = QLabel( title )
+
+
+    def createHeading(self, title: str) -> QHBoxLayout:
+        layout = QHBoxLayout()
+
+        # Load and resize election_commission.png
+        left_image_label = QLabel()
+        left_pixmap = QPixmap(PATH_TO_ELECTION_COMM_IMAGE , "png").scaled(
+            100, 60, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation
+        )
+        left_image_label.setPixmap(left_pixmap)
+        left_image_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
+
+        # Load and resize ashok_chakra.png
+        right_image_label = QLabel()
+        right_pixmap = QPixmap(PATH_TO_ASHOKA_CHAKRA_IMAGE, "png").scaled(
+            60, 60, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation
+        )
+        right_image_label.setPixmap(right_pixmap)
+        right_image_label.setAlignment(Qt.AlignmentFlag.AlignRight)
+
+        # Create the heading label
+        heading = QLabel(title)
         heading.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        heading.setFont( self.getHeadingFont() )
-        heading.setStyleSheet( CSS_STYLE_FOR_TOP_HEADING )
-        return heading
+        heading.setFont(self.getHeadingFont())
+        heading.setStyleSheet(CSS_STYLE_FOR_TOP_HEADING)
+
+        # Add to layout with stretches
+        layout.addWidget(left_image_label)
+        layout.addStretch(1)
+        layout.addWidget(heading)
+        layout.addStretch(1)
+        layout.addWidget(right_image_label)
+
+        return layout
 
 
 
-    def getIcon( self ) -> QIcon : return self.icon
+    def getIcon( self ) -> QIcon : return QIcon() if self.icon == None else self.icon
 
 
 
@@ -112,6 +128,14 @@ class AppConfigs :
 
 
     def getScreen( self ) -> QSize : return self.screen
+
+    
+
+    def getAlphaNumValidator( self ) -> QRegularExpressionValidator : return QRegularExpressionValidator(QRegularExpression("^[a-zA-Z0-9]*$"))
+
+
+
+    def getAlphabetValidator( self ) -> QRegularExpressionValidator : return QRegularExpressionValidator(QRegularExpression("^[a-zA-Z]*$"))
 
 
 # Global object to cache fonts, icon and other objects for faster loading with low memory usage
