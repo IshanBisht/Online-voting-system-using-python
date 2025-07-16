@@ -5,3 +5,4 @@ from PyQt5.QtCore import Qt, QRect, QSize, QCoreApplication, QSize, QRegularExpr
 from sys import argv , exit
 from hashlib import sha256
 import pymysql
+from pymysql.cursors import DictCursor
