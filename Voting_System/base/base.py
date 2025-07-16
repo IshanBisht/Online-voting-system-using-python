@@ -54,7 +54,7 @@ CSS_STYLE_FOR_INPUT_BOX = """
 CSS_STYLE_FOR_INPUT_LABELS = """
     color: white;
     font-weight: bold;
-    font-size: 14px;
+    font-size: 16px;
     margin-bottom: 4px;
 """
 
