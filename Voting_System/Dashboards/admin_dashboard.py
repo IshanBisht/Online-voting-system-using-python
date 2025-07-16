@@ -1,196 +1,108 @@
-from tkinter import *
-from tkinter import filedialog, ttk, messagebox
-from PIL import Image, ImageTk
-import mysql.connector
-import pymysql
-import Voting_System.base.variables as cr
+from Voting_System.base.base import *
 
-def fetch_admin_id():
-    return "Admin123"
+class AdminDashboard(QWidget):
+    FIXED_WIDTH = 800
+    FIXED_HEIGHT = 400
 
-class AdminDashboard:
-    def __init__(self, root):
-        self.window = root
-        self.window.title("Admin Dashboard")
-        screen_width=self.window.winfo_screenwidth()
-        screen_height=self.window.winfo_screenheight()
-        self.window.geometry(f"{screen_width}x{screen_height}+0+0")
+    def __init__(self):
+        super().__init__()
 
-        self.window.config(bg="white")
+        self.__admin_id = 0
+        self.__admin_name = ""
+        self.__admin_place = ""
 
-        self.admin_id = fetch_admin_id()
-        self.profile_pic = None
+        self.setWindowTitle( TITLE_ADMIN_DASHBOARD )
+        self.setWindowIcon( ovs_app_config.getIcon() )
+        self.setStyleSheet( CSS_STYLE_FOR_WIDGETS )
+        self.setFixedSize(self.FIXED_WIDTH, self.FIXED_HEIGHT)
 
-        self.menu_frame = Frame(self.window, bg="blue", width=300, height=800)
-        self.menu_frame.place(x=0, y=0)
+        layout = QVBoxLayout()
 
-        self.admin_label = Label(self.menu_frame, text=f"Admin ID: {self.admin_id}", font=("helvetica", 16), bg="lightgray")
-        self.admin_label.pack(pady=20)
+        layout.addLayout( ovs_app_config.createHeading("Welcome Admin") )
 
-        self.upload_button = Button(self.menu_frame, text="Upload Picture", command=self.upload_picture)
-        self.upload_button.pack(pady=20)
+        # Spacer
+        layout.addSpacing(20)
 
-        self.candidate_details_button = Button(self.menu_frame, text="Candidate's Details", command=self.show_candidate_details)
-        self.candidate_details_button.pack(pady=20)
+        label_layout = QHBoxLayout()
 
-        self.results_button = Button(self.menu_frame, text="Results", command=self.show_results)
-        self.results_button.pack(pady=20)
+        # Info Labels
+        self.label_id = QLabel("")
+        self.label_name = QLabel("")
+        self.label_place = QLabel("")
 
-        self.content_frame = Frame(self.window, bg="white", width=980, height=800)
-        self.content_frame.place(x=300, y=0)
-        self.welcome_label = Label(self.content_frame, text="Welcome to the Admin Dashboard", font=("helvetica", 30, "bold"), bg="white", fg="black")
-        self.welcome_label.pack(pady=50)
-
-    def upload_picture(self):
-        file_path = filedialog.askopenfilename()
-        if file_path:
-            self.profile_pic = Image.open(file_path)
-            self.profile_pic = self.profile_pic.resize((150, 150))
-            self.profile_pic = ImageTk.PhotoImage(self.profile_pic)
-            self.picture_label.config(image=self.profile_pic)
-
-    def show_candidate_details(self):
-        for widget in self.content_frame.winfo_children():
-            widget.destroy()
+        for label in [self.label_id, self.label_name, self.label_place]:
+            label.setStyleSheet( CSS_STYLE_FOR_DASHBOARD_LABELS )
+            label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            label.setFont( ovs_app_config.getDashboardLabelFont() )
+            label_layout.addWidget(label)
         
-        canvas = Canvas(self.content_frame, width=960, height=800)
-        scrollbar = Scrollbar(self.content_frame, orient="vertical", command=canvas.yview, width=20)
-        scrollable_frame = Frame(canvas, width=940, height=780)
+        layout.addLayout(label_layout)
 
-        scrollable_frame.bind(
-            "<Configure>",
-            lambda e: canvas.configure(
-                scrollregion=canvas.bbox("all")
-            )
-        )
+        layout.addSpacing(30)
 
-        canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
-        canvas.configure(yscrollcommand=scrollbar.set)
+        button_layout = QGridLayout()
+        # Buttons
+        self.btn_delete_candidates = QPushButton("Delete Candidate")
+        self.btn_election_status = QPushButton("Show Election Status")
+        self.btn_show_candidates = QPushButton("Show Candidates")
+        self.btn_publish_results = QPushButton("Publish Results")
 
-        canvas.pack(side="left", fill="both", expand=True)
-        scrollbar.pack(side="right", fill="y")
+        row = 0
+        col = 0
 
-        conn = mysql.connector.connect(
-            host="127.0.0.1",
-            user="root",
-            password="root",  
-            database="voter"
-        )
-        cursor = conn.cursor()
-        cursor.execute('SELECT user_id, party_name, election_name, achievements, photo_path FROM can_dashboard')
-        candidates = cursor.fetchall()
-        conn.close()
+        for btn in [self.btn_delete_candidates, self.btn_election_status, self.btn_show_candidates, self.btn_publish_results]:
+            btn.setStyleSheet(CSS_STYLE_FOR_BUTTONS)
+            button_layout.addWidget(btn,row,col)
 
-        for candidate in candidates:
-            user_id, party_name, election_name, achievements, photo_path = candidate
+            if col == 1 :
+                row += 1
+                col = 0
+            else :
+                col += 1
 
-            frame = Frame(scrollable_frame, bg="light blue", bd=1, relief="solid")
-            frame.pack(fill="x", padx=10, pady=5)
+        layout.addLayout( button_layout )
 
-            if photo_path:
-                img = Image.open(photo_path)
-                img = img.resize((100, 100))
-                photo = ImageTk.PhotoImage(img)
-                img_label = Label(frame, image=photo, bg="yellow")
-                img_label.image = photo
-                img_label.pack(side="left", padx=10)
+        layout.addSpacing(20)
 
-            details_frame = Frame(frame, bg="light blue")
-            details_frame.pack(side="left", fill="x", expand=True)
+        self.addActionsToButtons()
 
-            Label(details_frame, text=f"User ID: {user_id}", font=("TimesNew Roman", 14), bg="white").pack(anchor="w", pady=2)
-            Label(details_frame, text=f"Party Name: {party_name}", font=("Arial", 14), bg="white").pack(anchor="w", pady=2)
-            Label(details_frame, text=f"Election Name: {election_name}", font=("helvetica", 14), bg="white").pack(anchor="w", pady=2)
-            Label(details_frame, text=f"Achievements: {achievements}", font=("Arial", 14), bg="white", wraplength=600).pack(anchor="w", pady=2)
-            delete_button = Button(frame, text="Delete", command=lambda uid=user_id: self.delete_candidate(uid))
-            delete_button.pack(anchor="e", pady=2)
-
-    def delete_candidate(self, user_id):
-        conn = mysql.connector.connect(
-            host="127.0.0.1",
-            user="root",
-            password="root",  
-            database="voter"
-        )
-        cursor = conn.cursor()
-        cursor.execute('DELETE FROM can_dashboard WHERE user_id=%s', (user_id,))
-        conn.commit()
-        conn.close()
-        self.show_candidate_details()
-
-    def show_results(self):
-        for widget in self.content_frame.winfo_children():
-            widget.destroy()
-
-        self.results_button = Button(self.content_frame, text="View Results", command=self.view_results, font=("times new roman", 15, "bold"), bg="blue", fg="white")
-        self.results_button.place(x=20, y=20, width=200, height=40)
-
-        self.results_frame = Frame(self.content_frame, bg="white")
-        self.results_frame.place(x=20, y=80, width=940, height=700)
-
-        self.canvas = Canvas(self.results_frame, bg="white")
-        self.scrollbar = Scrollbar(self.results_frame,orient=VERTICAL, command=self.canvas.yview)
-        self.scrollable_frame = Frame(self.canvas, bg="white")
-
-        self.scrollable_frame.bind(
-            "<Configure>",
-            lambda e: self.canvas.configure(
-                scrollregion=self.canvas.bbox("all")
-            )
-        )
-
-        self.canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
-        self.canvas.configure(yscrollcommand=self.scrollbar.set)
-
-        self.canvas.pack(side=LEFT, fill=BOTH, expand=True)
-        self.scrollbar.pack(side=RIGHT, fill=Y)
-
-    def view_results(self):
-        # Clear previous results
-        for widget in self.scrollable_frame.winfo_children():
-            widget.destroy()
-
-        try:
-            connection = pymysql.connect(host=cr.host, user=cr.user, password=cr.password, database=cr.database)
-            cur = connection.cursor()
-
-            # Fetch candidate details and image paths
-            cur.execute("SELECT user_id, party_name, photo_path FROM can_dashboard")
-            candidates = cur.fetchall()
-
-            # Fetch vote counts
-            cur.execute("SELECT party_name, COUNT(*) as votes FROM votes GROUP BY party_name")
-            votes = cur.fetchall()
-            votes_dict = {party: count for party, count in votes}
-
-            Label(self.scrollable_frame, text="Candidate Details", font=("times new roman", 20, "bold"), bg="white").pack()
-
-            for candidate in candidates:
-                candidate_name, party_name, image_path = candidate
-                vote_count = votes_dict.get(party_name, 0)
-                candidate_info = f"Candidate Name: {candidate_name}\n Party: {party_name}\n Votes: {vote_count}"
-
-                frame = Frame(self.scrollable_frame, bg="light blue", bd=1, relief="solid")
-                frame.pack(fill="x", padx=10, pady=5)
-
-                # Display candidate image
-                img = Image.open(image_path)
-                img = img.resize((100, 100))
-                photo = ImageTk.PhotoImage(img)
-                img_label = Label(frame, image=photo, bg="white")
-                img_label.image = photo
-                img_label.pack(side="left", padx=10)
-
-                # Display candidate information
-                info_label = Label(frame, text=candidate_info, font=("times new roman", 15), bg="white", anchor="w", justify=LEFT)
-                info_label.pack(side="left", fill="x", expand=True)
-
-            connection.close()
-        except Exception as es:
-            messagebox.showerror("Error!", f"Error due to {es}", parent=self.window)
+        self.setLayout(layout)
 
 
-if __name__ == "__main__":
-    root = Tk()
-    obj = AdminDashboard(root)
-    root.mainloop()
+
+    def addActionsToButtons( self ) -> None :
+        self.btn_delete_candidates.clicked.connect( self.__deleteCandidates )
+        self.btn_election_status.clicked.connect( self.__getElectionStatus )
+        self.btn_show_candidates.clicked.connect( self.__showCandidates )
+        self.btn_publish_results.clicked.connect( self.__publishResults )
+
+    def showUI( self , __values: dict[int, int | str]) -> None :
+        self.__admin_id = __values[KEY_ID]
+        self.__admin_place = __values[KEY_PLACE]
+
+        self.label_id.setText("Admin ID: " + str( self.__admin_id) )
+        self.label_name.setText("Name: "   + str( __values[KEY_FULL_NAME] ).capitalize())
+        self.label_place.setText("Place: " + str( self.__admin_place )     .capitalize())
+        self.show()
+
+    
+    def __deleteCandidates( self ) -> None :
+        pass
+
+    def __getElectionStatus( self ) -> None :
+        pass
+
+    def __showCandidates( self ) -> None :
+        pass
+
+    def __publishResults( self ) -> None :
+        output = QMessageBox.question(self, "Sure?" , "Are you sure to publish election results?",buttons=QMessageBox.StandardButton.Yes, defaultButton=QMessageBox.StandardButton.No )
+
+        if output == QMessageBox.StandardButton.No : return 
+
+        try : 
+            ovs_data_manager.publishResult( str(self.__admin_place) )
+            ovs_app_config.showInformation( self, "Election Result has been published successfully!")
+        except OvsException as excep :
+            ovs_app_config.showError( self, excep.__str__())
+        
