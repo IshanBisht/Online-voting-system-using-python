@@ -1,5 +1,5 @@
 from Voting_System.base.base import *
-
+from Voting_System.Dashboards.voter_dashboard import *
 
 class VoterLogin(QWidget):
     FIXED_WIDTH = 500
@@ -15,6 +15,7 @@ class VoterLogin(QWidget):
         self.setFixedSize(self.FIXED_WIDTH, self.FIXED_HEIGHT)
         self.setup_ui()
 
+        self.__voter_dashboard = VoterDashboard()
 
 
     def setup_ui(self):
@@ -72,9 +73,21 @@ class VoterLogin(QWidget):
             QMessageBox.warning(self, "Incomplete", "Please enter both Voter ID and Password.")
             return
 
-        # Placeholder success message
-        QMessageBox.information(self, "Login Successful", f"Welcome, {voter_id}!")
+        try :
+            voter_info = ovs_data_manager.getVoter(int(voter_id), password)
+            self.__voter_dashboard.showUI( voter_info )
+        except OvsWrongLoginInfoException as excep :
+            ovs_app_config.showWrongLoginException( self )
+        
+        # clearning the input box for safety purposes
+        self.voter_id.clear()
+        self.password.clear()
 
-    def create_account_clicked(self): pass
-        # QMessageBox.information(self, "Redirect", "Redirecting to Voter Registration Page...")
+
+
+    def closeEvent( self, __event : QCloseEvent) -> None :
+
+        self.__voter_dashboard.close()
+
+        __event.accept()
 

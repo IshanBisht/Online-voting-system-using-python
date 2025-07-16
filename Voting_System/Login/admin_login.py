@@ -14,7 +14,7 @@ class AdminLogin(QWidget):
         self.setFixedSize(self.FIXED_WIDTH, self.FIXED_HEIGHT)
         self.setup_ui()
 
-        self.admin_dashboard = AdminDashboard()
+        self.__admin_dashboard = AdminDashboard()
 
 
 
@@ -81,7 +81,7 @@ class AdminLogin(QWidget):
 
         try :
             admin_info = ovs_data_manager.getAdmin(int(admin_id), password)
-            self.admin_dashboard.showUI( admin_info )
+            self.__admin_dashboard.showUI( admin_info )
         except OvsWrongLoginInfoException as excep :
             ovs_app_config.showWrongLoginException( self )
         
@@ -92,5 +92,5 @@ class AdminLogin(QWidget):
 
     
     def closeEvent( self , __event : QCloseEvent ) :
-        self.admin_dashboard.close()
+        self.__admin_dashboard.close()
         __event.accept()
