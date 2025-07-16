@@ -6,7 +6,7 @@ CSS_STYLE_FOR_BUTTONS = f"""
         background-color: #ffffff;
         color: {COLOR_CODE_BACKGROUND};
         border-radius: 10px;
-        font-size: 16px;
+        font-size: 18px;
         font-weight: bold;
         padding: 10px 20px;
     }}
@@ -58,6 +58,13 @@ CSS_STYLE_FOR_INPUT_LABELS = """
     margin-bottom: 4px;
 """
 
+CSS_STYLE_FOR_DASHBOARD_LABELS = """
+    color: white;
+    font-weight: bold;
+    font-size: 20px;
+    margin-bottom: 4px;
+"""
+
 
 class AppConfigs :
 
@@ -65,6 +72,7 @@ class AppConfigs :
         self.icon = None
         self.heading_font = None
         self.button_font = None
+        self.dashboard_label_font = None
         self.screen = None
 
 
@@ -74,6 +82,7 @@ class AppConfigs :
         self.heading_font = QFont("Arial", 24, QFont.Weight.Bold)
         self.button_font = QFont("Arial", 22, QFont.Weight.Bold)
         self.screen = QApplication.primaryScreen().size()
+        self.dashboard_label_font = QFont("Arial" , 32, QFont.Weight.DemiBold)
 
 
 
@@ -136,7 +145,27 @@ class AppConfigs :
 
 
     def getUnsignedIntValidator( self ) -> QIntValidator : return QIntValidator(0, 2147483647)
+
+
+
+    def getDashboardLabelFont( self ) -> QFont :
+        return self.dashboard_label_font
+
+
+
+    def showWrongLoginException( self , parent : QWidget ) -> None :
+        QMessageBox.critical( parent, "Invalid Login", "Entered ID and Password didn't matched", QMessageBox.StandardButton.Close)
+
     
+
+    def showInformation( self, __parent : QWidget , __message : str , __title : str = "Information" ) -> None :
+        QMessageBox.information( __parent, __title , __message , buttons= QMessageBox.StandardButton.Ok)
+
+
+
+    def showError( self , __parent : QWidget , __message : str , __title : str = "Error") -> None:
+        QMessageBox.critical( __parent, __title, __message, buttons= QMessageBox.StandardButton.Ok)
+
 
 
 # Global object to cache fonts, icon and other objects for faster loading with low memory usage
