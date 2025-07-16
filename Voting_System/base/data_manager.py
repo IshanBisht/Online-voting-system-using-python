@@ -204,7 +204,7 @@ class DataManager:
             KEY_VOTE_COUNT  : row[OVS_COLUMN_VOTE_COUNT]
         }
 
-        return { }
+        raise OvsNoPlaceFoundException()
 
 
 
@@ -228,6 +228,19 @@ class DataManager:
         return results
     
 
+    def publishResult( self, __place : str ) -> None :
+
+        data = self.getWinnerCandidate( __place )
+
+        # writing the data to the ResultTable
+        self.cursor.execute(f"INSERT INTO {OVS_TABLE_RESULT} values( {data[KEY_PLACE]} , { str(data[KEY_FIRST_NAME]) + str(data[KEY_LAST_NAME]) }, { data[KEY_ID]} , { data[KEY_VOTE_COUNT]} )")
+
+        # now deleting all the candidates with same place
+        self.cursor.execute(f"delete * from {OVS_TABLE_CANDIDATE} where {OVS_COLUMN_PLACE}='{data[KEY_PLACE]}'")
+
+        self.conn.commit()
+
+        
 
     def close( self ) -> None :
 
