@@ -126,9 +126,7 @@ class VoterRegistration(QWidget):
         
         try :
             new_voter_id = ovs_data_manager.registerVoter(int(aadhar_num), fname, lname, password_text, election_place)
-
-            QMessageBox.information(self, "Success", f"Voter registered successfully with ID '{new_voter_id}'")
-        
+            ovs_app_config.showInformation( self, f"Voter registered successfully with ID '{new_voter_id}'", "Success")
+    
         except Exception as excep :
-
-            QMessageBox.critical( self , "Error caught", "Cannot register the voter because " + excep.__str__())
+            ovs_app_config.showError( self, "Cannot register the voter because " + excep.__str__(), "Error")

@@ -123,9 +123,8 @@ class CandidateRegistration(QWidget):
             return
         
         try :
-            ovs_data_manager.registerCandidate(int(aadhar_num), fname, lname, election_place, password_text)
-
-            QMessageBox.information(self, "Success", "Candidate registered successfully!")
+            generated_candidate_id = ovs_data_manager.registerCandidate(int(aadhar_num), fname, lname, election_place, password_text)
+            ovs_app_config.showInformation(self, f"Candidate registered successfully with ID '{ generated_candidate_id }'" , "Success")
         
-        except Exception as excep:
-            QMessageBox.critical( self, "Error Found", "Cannot register the candidate because " + excep.__str__())
+        except OvsException as excep:
+            ovs_app_config.showError( self, "Cannot register the candidate because " + excep.__str__(), "Error" )
