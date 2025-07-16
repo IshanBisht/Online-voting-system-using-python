@@ -57,7 +57,7 @@ class VoterRegistration(QWidget):
 
         # place
         self.place = QLineEdit()
-        self.place.setPlaceholderText("Place from where you are standing for election")
+        self.place.setPlaceholderText("Place where you live")
         self.place.setValidator( ovs_app_config.getAlphabetValidator() )
         self.place.setStyleSheet( CSS_STYLE_FOR_INPUT_BOX )
         form_layout.addWidget(self._labeled_widget("Place", self.place, CSS_STYLE_FOR_INPUT_LABELS))
