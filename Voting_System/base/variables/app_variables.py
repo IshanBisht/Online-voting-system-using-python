@@ -13,3 +13,8 @@ TITLE_LOGIN_PAGE                   = "Login to OVS"
 TITLE_ADMIN_LOGIN_PAGE             = "Admin Login"
 TITLE_VOTER_LOGIN_PAGE             = "Voter Login"
 TTILE_CANDIDATE_LOGIN_PAGE         = "Candidate Login"
+
+TITLE_ADMIN_DASHBOARD              = "Admin Dashboard"
+TITLE_CANDIDATE_DASHBOARD          = "Candidate Dashboard"
+TITLE_VOTER_DASHBOARD              = "Voter Dashboard"
+TITLE_RESULT_DASHBOARD             = "Election Result"

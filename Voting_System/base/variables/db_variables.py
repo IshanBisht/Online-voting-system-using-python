@@ -4,6 +4,7 @@ OVS_DATABASE  = "VotingSystem"
 OVS_TABLE_ADMIN       = "AdminTable"
 OVS_TABLE_CANDIDATE   = "CandidateTable"
 OVS_TABLE_VOTER       = "VoterTable"
+OVS_TABLE_RESULT      = "ResultTable"
 
 OVS_COLUMN_ID         = "id"
 OVS_COLUMN_NAME       = "full_name"
