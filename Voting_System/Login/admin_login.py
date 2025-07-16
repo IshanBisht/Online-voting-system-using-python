@@ -1,4 +1,5 @@
 from Voting_System.base.base import *
+from Voting_System.Dashboards.admin_dashboard import *
 
 class AdminLogin(QWidget):
     FIXED_WIDTH = 500
@@ -10,16 +11,12 @@ class AdminLogin(QWidget):
         self.setWindowTitle( TITLE_ADMIN_LOGIN_PAGE )
         self.setWindowIcon( ovs_app_config.getIcon() )
         self.setStyleSheet( CSS_STYLE_FOR_WIDGETS )
-
         self.setFixedSize(self.FIXED_WIDTH, self.FIXED_HEIGHT)
-        self.center_window()
-        self.setup_ui()        
+        self.setup_ui()
 
-    def center_window(self):
-        screen = ovs_app_config.getScreen()
-        x = (screen.width() - self.FIXED_WIDTH) // 2
-        y = (screen.height() - self.FIXED_HEIGHT) // 2
-        self.setGeometry(QRect(x, y, self.FIXED_WIDTH, self.FIXED_HEIGHT))
+        self.admin_dashboard = AdminDashboard()
+
+
 
     def setup_ui(self):
         layout = QVBoxLayout()
@@ -60,6 +57,8 @@ class AdminLogin(QWidget):
         layout.addWidget(form_widget)
         self.setLayout(layout)
 
+
+
     def _labeled_widget(self, label_text, widget, label_style):
         container = QVBoxLayout()
         label = QLabel(label_text)
@@ -70,6 +69,8 @@ class AdminLogin(QWidget):
         box.setLayout(container)
         return box
 
+
+
     def validate_login(self):
         admin_id = self.admin_id.text().strip()
         password = self.password.text().strip()
@@ -78,5 +79,18 @@ class AdminLogin(QWidget):
             QMessageBox.warning(self, "Incomplete", "Please enter both Admin ID and Password.")
             return
 
-        # Placeholder success message
-        QMessageBox.information(self, "Login Successful", f"Welcome, {admin_id}!")
+        try :
+            admin_info = ovs_data_manager.getAdmin(int(admin_id), password)
+            self.admin_dashboard.showUI( admin_info )
+        except OvsWrongLoginInfoException as excep :
+            ovs_app_config.showWrongLoginException( self )
+        
+        # clearning the input box for safety purposes
+        self.admin_id.clear()
+        self.password.clear()
+
+
+    
+    def closeEvent( self , __event : QCloseEvent ) :
+        self.admin_dashboard.close()
+        __event.accept()
