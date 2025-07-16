@@ -39,7 +39,7 @@ class RegistrationWindow(QWidget):
         layout = QVBoxLayout()
         layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        layout.addLayout( ovs_app_config.createHeading( TITLE_REGISTRATION_PAGE ) )
+        layout.addLayout( ovs_app_config.createHeading( "REGISTER" ) )
 
         layout.addSpacing(40)
 
