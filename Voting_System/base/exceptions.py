@@ -30,3 +30,6 @@ class OvsProgrammingError ( OvsException ):
 
 class OvsVoteAlreadyGivenException( OvsException ) :
     def __str__(self) : return "You have already voted before."
+
+class OvsNoPlaceFoundException( OvsException ) :
+    def __str__(self) : return "Either the result is already declared or no election is going on in this place."
