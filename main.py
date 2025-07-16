@@ -10,4 +10,6 @@ if __name__ == "__main__":
 
     main_widget.show()
 
+    ovs_data_manager.connect()
+
     exit( voting_app.exec() )
