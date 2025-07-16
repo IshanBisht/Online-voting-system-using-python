@@ -2,7 +2,7 @@ from Voting_System.base.base import *
 
 class CandidateLogin(QWidget):
     FIXED_WIDTH = 500
-    FIXED_HEIGHT = 500
+    FIXED_HEIGHT = 450
 
     def __init__(self):
         super().__init__()
@@ -44,23 +44,6 @@ class CandidateLogin(QWidget):
         login_btn.clicked.connect(self.validate_login)
         form_layout.addSpacing(30)
         form_layout.addWidget(login_btn)
-
-        create_account_btn = QPushButton("REGISTER A NEW CANDIDATE ACCOUNT")
-        create_account_btn.setStyleSheet("""
-            QPushButton {
-                background-color: transparent;
-                color: white;
-                font-size: 14px;
-                font-weight: bold;
-                text-decoration: underline;
-                border: none;
-            }
-            QPushButton:hover {
-                color: #d0dfff;
-            }
-        """)
-        create_account_btn.clicked.connect(self.create_account_clicked)
-        form_layout.addWidget(create_account_btn)
 
         form_widget = QWidget()
         form_widget.setLayout(form_layout)
