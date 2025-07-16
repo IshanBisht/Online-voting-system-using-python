@@ -1,6 +1,6 @@
 from .imports import *
-from .app_variables import *
-from .db_variables import *
+from .variables.app_variables import *
+from .variables.db_variables import *
 from .exceptions import *
 
 KEY_FULL_NAME           :int       = 0
@@ -18,128 +18,230 @@ class DataManager:
     def getHash(__password: str) -> str:
         return sha256(__password.encode()).hexdigest()
 
-    def __init__(self):
-        self.conn = mysql.connector.connect(
+
+
+    def __init__(self) :
+        self.__isclosed = True
+
+
+    def connect( self ) -> None :
+        self.conn = pymysql.connect(
             host= OVS_HOST,
             user= OVS_USER,
             password= OVS_PASSWORD,
             database= OVS_DATABASE
         )
-        self.cursor = self.conn.cursor(dictionary=True)
 
-    def registerCandidate(self, __aadhar_number: int, __first_name: str, __last_name: str, __place: str, __password: str) -> int:
-        self.cursor.execute("SELECT id FROM candidates WHERE aadhar = %s", (__aadhar_number,))
+        self.cursor = self.conn.cursor( DictCursor )
+        self.__isclosed : bool = False
+    
 
-        if self.cursor.fetchone():
-            raise Exception("Candidate with same Aadhar already exists")
 
-        self.cursor.execute("""
-            INSERT INTO candidates (aadhar, first_name, last_name, place, password_hash)
-            VALUES (%s, %s, %s, %s, %s)
-        """, (__aadhar_number, __first_name, __last_name, __place, self.getHash(__password)))
+    def registerCandidate(self, __aadhar_number: int, __first_name: str, __last_name: str, __place: str, __password: str) -> int: 
+        
+        if self.__isclosed : raise OvsProgrammingError()
+
+        # checking if another candidate with same aadhar_number is in the database or not
+        self.cursor.execute(f"Select {OVS_COLUMN_AADHAR} from { OVS_TABLE_CANDIDATE} where {OVS_COLUMN_AADHAR}= {__aadhar_number}")
+
+        if self.cursor.fetchone() : raise OvsCandidateAlreadyRegistered()
+
+        self.cursor.execute(f"""
+            INSERT INTO { OVS_TABLE_CANDIDATE } VALUES(
+                {__aadhar_number},
+                '{__first_name}',
+                '{__last_name}',
+                '{__place}',
+                '{DataManager.getHash( __password)}',
+                0,
+                0
+            )
+        """)
 
         self.conn.commit()
-        
-        return self.cursor.lastrowid + 999
 
-    def getCandidate(self, __candidate_id: int, __password: str) -> dict[int, int | str]:
-        id_actual = __candidate_id - 999
-        self.cursor.execute("SELECT * FROM candidates WHERE id = %s", (id_actual,))
+        self.cursor.execute(f"SELECT { OVS_COLUMN_ID } from { OVS_TABLE_CANDIDATE } where { OVS_COLUMN_AADHAR } = { __aadhar_number }")
+
+        return int( self.cursor.fetchone()[OVS_COLUMN_ID] )
+
+
+
+    def getCandidate(self, __candidate_id: int, __password: str) -> dict[int, int | str] :
+
+        if self.__isclosed : raise OvsProgrammingError()
+
+        self.cursor.execute(f"SELECT * from {OVS_TABLE_CANDIDATE} where {OVS_COLUMN_ID}= {__candidate_id} && {OVS_COLUMN_PASSWORD}= '{ DataManager.getHash( __password)}'")
+
         row = self.cursor.fetchone()
-        if not row:
-            raise OvsInvalidCandidateIDException()
-        if row['password_hash'] != self.getHash(__password):
-            raise OvsWrongLoginInfoException()
-        return {
-            KEY_FIRST_NAME: row['first_name'],
-            KEY_LAST_NAME: row['last_name'],
-            KEY_PLACE: row['place'],
-            KEY_ID: row['id'] + 999,
-            KEY_VOTE_COUNT: row['vote_count'],
-            KEY_AADHAR_CARD: row['aadhar']
+
+        if row : return {
+            KEY_ID          : row[OVS_COLUMN_ID],
+            KEY_AADHAR_CARD : row[OVS_COLUMN_AADHAR],
+            KEY_FIRST_NAME  : row[OVS_COLUMN_FIRST_NAME],
+            KEY_LAST_NAME   : row[OVS_COLUMN_LAST_NAME],
+            KEY_PLACE       : row[OVS_COLUMN_PLACE],
+            KEY_VOTE_COUNT  : row[OVS_COLUMN_VOTE_COUNT]
         }
 
-    def registerVoter(self, __aadhar_number: int, __first_name: str, __last_name: str, __password: str, __place: str) -> int:
-        self.cursor.execute("SELECT id FROM voters WHERE aadhar = %s", (__aadhar_number,))
-        if self.cursor.fetchone():
-            raise Exception("Voter with same Aadhar already exists")
+        raise OvsWrongLoginInfoException()
 
-        self.cursor.execute("""
-            INSERT INTO voters (aadhar, first_name, last_name, place, password_hash)
-            VALUES (%s, %s, %s, %s, %s)
-        """, (__aadhar_number, __first_name, __last_name, __place, self.getHash(__password)))
+
+
+    def registerVoter(self, __aadhar_number: int, __first_name: str, __last_name: str, __password: str, __place: str) -> int :
+
+        if self.__isclosed : raise OvsProgrammingError()
+
+        self.cursor.execute(f"""
+            Insert into {OVS_TABLE_VOTER} values(
+                 {__aadhar_number},
+                '{ __first_name}',
+                '{__last_name}',
+                '{__place}',
+                '{DataManager.getHash(__password)}',
+                0,
+                FALSE
+            )
+        """)
+
         self.conn.commit()
-        return self.cursor.lastrowid + 999
+
+        self.cursor.execute(f"Select {OVS_COLUMN_ID} from {OVS_TABLE_VOTER} where {OVS_COLUMN_AADHAR}= {__aadhar_number}")
+
+        return int(self.cursor.fetchone()[OVS_COLUMN_ID])
+        
+
 
     def getVoter(self, __voter_id: int, __password: str) -> dict[int, int | str]:
-        id_actual = __voter_id - 999
-        self.cursor.execute("SELECT * FROM voters WHERE id = %s", (id_actual,))
+
+        if self.__isclosed : raise OvsProgrammingError()
+        
+        self.cursor.execute(f"SELECT * from {OVS_TABLE_VOTER} where {OVS_COLUMN_ID}= {__voter_id} && {OVS_COLUMN_PASSWORD}= '{DataManager.getHash(__password)}'")
+
         row = self.cursor.fetchone()
-        if not row:
-            raise OvsInvalidVoterIDException()
-        if row['password_hash'] != self.getHash(__password):
-            raise OvsWrongLoginInfoException()
-        return {
-            KEY_FIRST_NAME: row['first_name'],
-            KEY_LAST_NAME: row['last_name'],
-            KEY_PLACE: row['place'],
-            KEY_ID: row['id'] + 999,
-            KEY_AADHAR_CARD: row['aadhar']
+
+        if row : return {
+            KEY_ID : row[OVS_COLUMN_ID],
+            KEY_AADHAR_CARD : row[OVS_COLUMN_AADHAR],
+            KEY_FIRST_NAME : row[OVS_COLUMN_FIRST_NAME],
+            KEY_LAST_NAME : row[OVS_COLUMN_LAST_NAME],
+            KEY_PLACE : row[OVS_COLUMN_PLACE]
         }
+
+        raise OvsWrongLoginInfoException()
 
     def getAdmin(self, __admin_id: int, __password: str) -> dict[int, int | str]:
 
-        self.cursor.execute(f"SELECT * FROM {OVS_TABLE_ADMIN} WHERE { OVS_COLUMN_ID } = { __admin_id }")
-        row = self.cursor.fetchone()
-        
-        if not row: raise OvsInvalidAdminIDException()
-        
-        elif row[ OVS_COLUMN_PASSWORD ] != self.getHash(__password): raise OvsWrongLoginInfoException()
+        if self.__isclosed : raise OvsProgrammingError()
 
-        return {
-            KEY_FULL_NAME : str(row[ OVS_COLUMN_NAME ]),
-            KEY_ID        : int(row[ OVS_COLUMN_ID]),
-            KEY_PLACE     : str(row[ OVS_COLUMN_PLACE])
+        self.cursor.execute(f"Select * from {OVS_TABLE_ADMIN} where {OVS_COLUMN_ID}={__admin_id} and {OVS_COLUMN_PASSWORD}= '{DataManager.getHash(__password)}'")
+
+        row = self.cursor.fetchone()
+
+        if row : return {
+            KEY_ID          : row[OVS_COLUMN_ID],
+            KEY_FULL_NAME   : row[OVS_COLUMN_NAME],
+            KEY_PLACE       : row[OVS_COLUMN_PLACE]
         }
 
-    def addVote(self, __candidate_id: int) -> None:
-        id_actual = __candidate_id - 999
-        self.cursor.execute("UPDATE candidates SET vote_count = vote_count + 1 WHERE id = %s", (id_actual,))
-        self.conn.commit()
+        raise OvsWrongLoginInfoException()
+
+        
+
+    def addVote(self, __candidate_id: int , __voter_id) -> None:
+
+        if self.__isclosed : raise OvsProgrammingError()
+
+        # checking if vote already given by voter 
+        self.cursor.execute(f"Select {OVS_COLUMN_ID} from {OVS_TABLE_VOTER} where {OVS_COLUMN_ID}= {__voter_id}")
+
+        row = self.cursor.fetchone()
+
+        # if row is not none, then 
+        if row :
+
+            is_vote_already_given = bool(row[OVS_COLUMN_VOTE_GIVEN])
+
+            if is_vote_already_given : raise OvsVoteAlreadyGivenException()
+
+            else :
+                # updating voter table
+                self.cursor.execute(f"update {OVS_TABLE_VOTER} set {OVS_COLUMN_VOTE_GIVEN}= TRUE where {OVS_COLUMN_ID}= {__voter_id}")
+
+                # finding the number of votes received till yet
+                self.cursor.execute(f"select {OVS_COLUMN_VOTE_COUNT} from {OVS_TABLE_CANDIDATE} where {OVS_COLUMN_ID}= {__candidate_id}")
+                
+                row = self.cursor.fetchone()
+
+                if row :
+                    # extracting the number of votes given and adding 1 to it.
+                    vote_received_till_yet = int(row[OVS_COLUMN_VOTE_COUNT]) + 1
+
+                    # updating the vote count
+                    self.cursor.execute(f"update {OVS_TABLE_CANDIDATE} set {OVS_COLUMN_VOTE_COUNT}= {vote_received_till_yet} where {OVS_COLUMN_ID}= {__candidate_id}")
+
+                    self.conn.commit()
+
+                else : raise OvsInvalidCandidateIDException()
+
+        else : raise OvsInvalidVoterIDException()
+
+        
 
     def getWinnerCandidate(self, __place: str) -> dict[int, int | str]:
-        self.cursor.execute("""
-            SELECT * FROM candidates
-            WHERE place = %s
-            ORDER BY vote_count DESC
-            LIMIT 1
-        """, (__place,))
+
+        if self.__isclosed : raise OvsProgrammingError()
+       
+        self.cursor.execute(f"Select * from {OVS_TABLE_CANDIDATE} where {OVS_COLUMN_PLACE}='{__place}' order by {OVS_COLUMN_VOTE_COUNT} desc LIMIT 1")
+
         row = self.cursor.fetchone()
-        if not row:
-            raise Exception("No candidates found for this place")
-        return {
-            KEY_FIRST_NAME: row['first_name'],
-            KEY_LAST_NAME: row['last_name'],
-            KEY_PLACE: row['place'],
-            KEY_ID: row['id'] + 999,
-            KEY_VOTE_COUNT: row['vote_count'],
-            KEY_AADHAR_CARD: row['aadhar']
+
+        if row : return {
+            KEY_ID          : row[OVS_COLUMN_ID],
+            KEY_AADHAR_CARD : row[OVS_COLUMN_AADHAR],
+            KEY_FIRST_NAME  : row[OVS_COLUMN_FIRST_NAME],
+            KEY_LAST_NAME   : row[OVS_COLUMN_LAST_NAME],
+            KEY_PLACE       : row[OVS_COLUMN_PLACE],
+            KEY_VOTE_COUNT  : row[OVS_COLUMN_VOTE_COUNT]
         }
 
+        return { }
+
+
+
     def getResult(self, __place: str) -> list[dict[int, int | str]]:
-        self.cursor.execute("SELECT * FROM candidates WHERE place = %s ORDER BY vote_count DESC", (__place,))
+
+        if self.__isclosed : raise OvsProgrammingError()
+
+        self.cursor.execute(f"Select * from {OVS_TABLE_CANDIDATE} where {OVS_COLUMN_PLACE}= '{__place}'")
+
         rows = self.cursor.fetchall()
         results = []
         for row in rows:
             results.append({
-                KEY_FIRST_NAME: row['first_name'],
-                KEY_LAST_NAME: row['last_name'],
-                KEY_PLACE: row['place'],
-                KEY_ID: row['id'] + 999,
-                KEY_VOTE_COUNT: row['vote_count'],
-                KEY_AADHAR_CARD: row['aadhar']
+                KEY_ID          : row[OVS_COLUMN_ID],
+                KEY_AADHAR_CARD : row[OVS_COLUMN_AADHAR],
+                KEY_FIRST_NAME  : row[OVS_COLUMN_FIRST_NAME],
+                KEY_LAST_NAME   : row[OVS_COLUMN_LAST_NAME],
+                KEY_PLACE       : row[OVS_COLUMN_PLACE],
+                KEY_VOTE_COUNT  : row[OVS_COLUMN_VOTE_COUNT],
             })
         return results
+    
+
+
+    def close( self ) -> None :
+
+        if self.__isclosed : return
+
+        self.conn.commit()
+        self.cursor.close()
+        self.conn.close()
+        self.__isclosed = True
+
+
+
+    def __del__( self ) -> None : self.close()
+
 
 
 ovs_data_manager = DataManager()
