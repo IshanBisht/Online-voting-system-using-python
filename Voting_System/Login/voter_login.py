@@ -36,7 +36,7 @@ class VoterLogin(QWidget):
 
         # Voter ID
         self.voter_id = QLineEdit()
-        self.voter_id.setValidator( QIntValidator() )
+        self.voter_id.setValidator( ovs_app_config.getUnsignedIntValidator() )
         self.voter_id.setPlaceholderText("Enter Voter ID")
         form_layout.addWidget(self._labeled_widget("Voter ID", self.voter_id, CSS_STYLE_FOR_INPUT_LABELS ))
 

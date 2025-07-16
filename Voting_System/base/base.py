@@ -134,5 +134,10 @@ class AppConfigs :
     def getAlphabetValidator( self ) -> QRegularExpressionValidator : return QRegularExpressionValidator(QRegularExpression("^[a-zA-Z]*$"))
 
 
+
+    def getUnsignedIntValidator( self ) -> QIntValidator : return QIntValidator(0, 2147483647)
+    
+
+
 # Global object to cache fonts, icon and other objects for faster loading with low memory usage
 ovs_app_config = AppConfigs()
