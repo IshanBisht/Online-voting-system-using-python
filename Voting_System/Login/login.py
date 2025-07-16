@@ -13,7 +13,6 @@ class LoginWindow(QWidget):
         self.setWindowIcon( ovs_app_config.getIcon() )
         self.setStyleSheet( CSS_STYLE_FOR_WIDGETS )
         self.setFixedSize(self.FIXED_WIDTH, self.FIXED_HEIGHT)
-        self.center_window()
 
         self.admin_login = AdminLogin()
         self.candidate_login = CandidateLogin()
@@ -21,11 +20,7 @@ class LoginWindow(QWidget):
 
         self.setup_ui()
 
-    def center_window(self):
-        screen = ovs_app_config.getScreen()
-        x = (screen.width() - self.FIXED_WIDTH) // 2
-        y = (screen.height() - self.FIXED_HEIGHT) // 2
-        self.setGeometry(QRect(x, y, self.FIXED_WIDTH, self.FIXED_HEIGHT))
+
 
     def setup_ui(self):
         layout = QVBoxLayout()
