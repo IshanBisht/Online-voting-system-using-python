@@ -119,7 +119,7 @@ class DataManager:
 
         if self.__isclosed : raise OvsProgrammingError()
 
-        self.cursor.execute(f"SELECT * from { OVS_TABLE_CANDIDATE } where { OVS_COLUMN_PLACE }= '{ __place }'")
+        self.cursor.execute(f"SELECT * from { OVS_TABLE_CANDIDATE } where { OVS_COLUMN_PLACE }= '{ __place.lower() }'")
 
         list_of_data = []
 
@@ -213,7 +213,7 @@ class DataManager:
 
         if self.__isclosed : raise OvsProgrammingError()
        
-        self.cursor.execute(f"Select * from {OVS_TABLE_CANDIDATE} where {OVS_COLUMN_PLACE}='{__place}' order by {OVS_COLUMN_VOTE_COUNT} desc LIMIT 1")
+        self.cursor.execute(f"Select * from {OVS_TABLE_CANDIDATE} where {OVS_COLUMN_PLACE}='{__place.lower()}' order by {OVS_COLUMN_VOTE_COUNT} desc LIMIT 1")
 
         row = self.cursor.fetchone()
 
@@ -233,7 +233,7 @@ class DataManager:
 
         if self.__isclosed : raise OvsProgrammingError()
 
-        self.cursor.execute(f"Select * from {OVS_TABLE_CANDIDATE} where {OVS_COLUMN_PLACE}= '{__place}'")
+        self.cursor.execute(f"Select * from {OVS_TABLE_CANDIDATE} where {OVS_COLUMN_PLACE}= '{__place.lower()}'")
 
         rows = self.cursor.fetchall()
         results = []
@@ -283,7 +283,7 @@ class DataManager:
         self.cursor.execute(f"INSERT INTO {OVS_TABLE_RESULT} values( '{data[KEY_PLACE]}' , '{ str(data[KEY_FIRST_NAME]) + str(data[KEY_LAST_NAME]) }', { data[KEY_ID]} , { data[KEY_VOTE_COUNT]} )")
 
         # now deleting all the candidates with same place
-        self.cursor.execute(f"DELETE FROM {OVS_TABLE_CANDIDATE} where {OVS_COLUMN_PLACE}='{data[KEY_PLACE]}'")
+        self.cursor.execute(f"DELETE FROM {OVS_TABLE_CANDIDATE} where {OVS_COLUMN_PLACE}='{str(data[KEY_PLACE]).lower()}'")
 
         self.conn.commit()
 
