@@ -12,6 +12,8 @@ class VoterDashboard(QWidget) :
         def __init__(self):
             super().__init__()
 
+            self.__list_of_buttons : list[QPushButton] = [ ]
+
             self.setWindowTitle(TITLE_VOTING_PANEL)
             self.setWindowIcon(ovs_app_config.getIcon())
             self.setStyleSheet(CSS_STYLE_FOR_WIDGETS)
@@ -33,27 +35,32 @@ class VoterDashboard(QWidget) :
             self.cleanPanel()
 
             for candidate_data in __list :
-                candidate_id = int(candidate_data[KEY_ID])
-
-                btn = QPushButton( f"({ candidate_id }) {candidate_data[ KEY_FULL_NAME ]}" )
+        
+                btn = QPushButton( f"({ candidate_data[KEY_ID] }) {candidate_data[ KEY_FULL_NAME ]}", parent= self )
                 btn.setStyleSheet( CSS_STYLE_FOR_BUTTONS )
                 btn.setFont( ovs_app_config.getButtonFont() )
                 btn.setFixedHeight(50)
-                btn.clicked.connect(lambda _: self.addVote(candidate_id , __voter_id))
+                btn.clicked.connect(lambda _, cid=int(candidate_data[KEY_ID]): self.addVote(cid , __voter_id))
+
+                self.__list_of_buttons.append( btn )
 
                 self.__layout.addWidget(btn)
             self.show()
-            
+
 
 
         def cleanPanel(self) -> None:
-            while self.__layout.count():
-                item = self.__layout.takeAt(0)
-                if item is not None:
-                    widget = item.widget()
-                    if widget is not None:
-                        widget.deleteLater()
 
+            for i in self.__list_of_buttons : self.__layout.removeWidget( i )
+
+            self.__list_of_buttons.clear()
+
+            # while self.__layout.count():
+            #     item = self.__layout.takeAt(0)
+            #     if item is not None:
+            #         widget = item.widget()
+            #         if widget is not None:
+            #             widget.deleteLater()
 
         
 
