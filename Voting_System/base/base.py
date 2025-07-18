@@ -60,29 +60,67 @@ CSS_STYLE_FOR_INPUT_LABELS = """
 
 CSS_STYLE_FOR_DASHBOARD_LABELS = """
     color: white;
-    font-weight: bold;
+    font-weight: bolder;
     font-size: 20px;
     margin-bottom: 4px;
 """
 
 
+
 class AppConfigs :
 
+    class UInt64Validator(QValidator):
+        __MAX_VALUE = 18446744073709551615
+
+        def __init__(self, parent=None):
+            super().__init__(parent)
+
+
+
+        def validate(self, input_str : str, pos):
+
+            try :
+
+                if input_str.__len__() == 0 : return QValidator.State.Intermediate, input_str, pos
+
+                elif input_str.isdigit():   # isdigit() returns False for negative values
+
+                    int_value = int( input_str )
+
+                    if int_value <= self.__MAX_VALUE :  return QValidator.State.Acceptable, input_str, pos
+                
+            except : pass
+                
+            return QValidator.State.Invalid , input_str , pos
+
+
+
+        def fixup(self, input_str): return ""
+
+
+
     def __init__( self ) :  
-        self.icon = None
-        self.heading_font = None
-        self.button_font = None
-        self.dashboard_label_font = None
-        self.screen = None
+        self.__icon = None
+        self.__heading_font = None
+        self.__button_font = None
+        self.__dashboard_label_font = None
+        self.__screen = None
+
+
+    
+    def bringWindowForward( self , __window : QWidget ) -> None :
+        __window.show()
+        __window.raise_()
+        __window.activateWindow()
 
 
 
     def prepare( self ) -> None :
-        self.icon = QIcon( PATH_TO_APP_ICON )
-        self.heading_font = QFont("Arial", 24, QFont.Weight.Bold)
-        self.button_font = QFont("Arial", 22, QFont.Weight.Bold)
-        self.screen = QApplication.primaryScreen().size()
-        self.dashboard_label_font = QFont("Arial" , 32, QFont.Weight.DemiBold)
+        self.__icon = QIcon( PATH_TO_APP_ICON )
+        self.__heading_font = QFont("Arial", 24, QFont.Weight.Bold)
+        self.__button_font = QFont("Arial", 22, QFont.Weight.Bold)
+        self.__screen = QApplication.primaryScreen().size()
+        self.__dashboard_label_font = QFont("Arial" , 32, QFont.Weight.DemiBold)
 
 
 
@@ -124,19 +162,28 @@ class AppConfigs :
 
 
 
-    def getIcon( self ) -> QIcon : return QIcon() if self.icon == None else self.icon
+    def createDashboardLabel( self, __text : str = "" ) -> QLabel :
+        label = QLabel( __text )
+        label.setStyleSheet( CSS_STYLE_FOR_DASHBOARD_LABELS )
+        label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        label.setFont( self.getDashboardLabelFont() )
+        return label
 
 
 
-    def getHeadingFont( self ) -> QFont : return self.heading_font
+    def getIcon( self ) -> QIcon : return QIcon() if self.__icon == None else self.__icon
 
 
 
-    def getButtonFont( self ) -> QFont  : return self.button_font
+    def getHeadingFont( self ) -> QFont : return self.__heading_font
 
 
 
-    def getScreen( self ) -> QSize : return self.screen
+    def getButtonFont( self ) -> QFont  : return self.__button_font
+
+
+
+    def getScreen( self ) -> QSize : return self.__screen
 
 
 
@@ -144,12 +191,11 @@ class AppConfigs :
 
 
 
-    def getUnsignedIntValidator( self ) -> QIntValidator : return QIntValidator(0, 2147483647)
+    def getUnsignedIntValidator( self ) -> UInt64Validator : return AppConfigs.UInt64Validator()
 
 
 
-    def getDashboardLabelFont( self ) -> QFont :
-        return self.dashboard_label_font
+    def getDashboardLabelFont( self ) -> QFont : return self.__dashboard_label_font
 
 
 
