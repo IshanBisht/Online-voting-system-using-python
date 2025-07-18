@@ -6,7 +6,7 @@ class OvsWrongLoginInfoException ( OvsException ):
 
 
 class OvsInvalidCandidateIDException ( OvsException ) :
-    def __str__(self) : return "You have entered the invalid candidate ID!"
+    def __str__(self) : return "You have entered the invalid candidate ID or maybe the results are declared due to which your ID is deleted"
 
 
 class OvsInvalidAdminIDException ( OvsException ) :
@@ -22,7 +22,7 @@ class OvsCandidateAlreadyRegistered( OvsException ) :
 
 
 class OvsVoterAlreadyRegistered ( OvsException ) :
-    def __str__(self) : return "The voter is already registered before."
+    def __str__(self) : return "The voter is already registered before with the same aadhar number"
 
 
 class OvsProgrammingError ( OvsException ):
@@ -33,3 +33,9 @@ class OvsVoteAlreadyGivenException( OvsException ) :
 
 class OvsNoPlaceFoundException( OvsException ) :
     def __str__(self) : return "Either the result is already declared or no election is going on in this place."
+
+class OvsNoSuchColumnExistsException( OvsException ) :
+    def __str__(self) : return "You are trying to access a column which is not available in the Table."
+
+class OvsNoResultsDeclaredException ( OvsException ) :
+    def __str__(self) : return "No result is declared yet. It may take some days to declare results"
