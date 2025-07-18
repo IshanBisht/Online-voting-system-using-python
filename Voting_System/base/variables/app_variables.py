@@ -4,6 +4,7 @@ PATH_TO_ELECTION_COMM_IMAGE        = "Images/election_commission.png"
 PATH_TO_APP_ICON                   = "Images/icon.png"
 COLOR_CODE_BACKGROUND              = "#567DD0"
 TITLE_MAIN_PAGE                    = "Online Voting System"
+COLOR_CODE_BORDER                  = "#4263A8"
 
 TITLE_REGISTRATION_PAGE            = "Register to OVS"
 TITLE_CANDIDATE_REGISTRATION_PAGE  = "Candidate Registration"
@@ -18,3 +19,5 @@ TITLE_ADMIN_DASHBOARD              = "Admin Dashboard"
 TITLE_CANDIDATE_DASHBOARD          = "Candidate Dashboard"
 TITLE_VOTER_DASHBOARD              = "Voter Dashboard"
 TITLE_RESULT_DASHBOARD             = "Election Result"
+
+TITLE_VOTING_PANEL                 = "Voting Panel"
