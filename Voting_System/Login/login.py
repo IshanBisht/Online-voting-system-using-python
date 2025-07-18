@@ -14,9 +14,9 @@ class LoginWindow(QWidget):
         self.setStyleSheet( CSS_STYLE_FOR_WIDGETS )
         self.setFixedSize(self.FIXED_WIDTH, self.FIXED_HEIGHT)
 
-        self.admin_login = AdminLogin()
-        self.candidate_login = CandidateLogin()
-        self.voter_login = VoterLogin()
+        self.__admin_login = AdminLogin()
+        self.__candidate_login = CandidateLogin()
+        self.__voter_login = VoterLogin()
 
         self.setup_ui()
 
@@ -32,15 +32,15 @@ class LoginWindow(QWidget):
 
         btn_admin = QPushButton(TITLE_ADMIN_LOGIN_PAGE)
         btn_admin.setStyleSheet(CSS_STYLE_FOR_BUTTONS)
-        btn_admin.clicked.connect( self.admin_login.show )
+        btn_admin.clicked.connect( self.__openAdminWindow )
 
         btn_candidate = QPushButton(TTILE_CANDIDATE_LOGIN_PAGE)
         btn_candidate.setStyleSheet(CSS_STYLE_FOR_BUTTONS)
-        btn_candidate.clicked.connect( self.candidate_login.show )
+        btn_candidate.clicked.connect( self.__openCandidateWindow )
 
         btn_voter = QPushButton(TITLE_VOTER_LOGIN_PAGE)
         btn_voter.setStyleSheet(CSS_STYLE_FOR_BUTTONS)
-        btn_voter.clicked.connect( self.voter_login.show )
+        btn_voter.clicked.connect( self.__openVoterWindow )
 
         layout.addWidget(btn_admin)
         layout.addSpacing(15)
@@ -51,8 +51,15 @@ class LoginWindow(QWidget):
         self.setLayout(layout)
     
     def closeEvent(self , event : QCloseEvent) -> None:
-        self.admin_login.close()
-        self.voter_login.close()
-        self.candidate_login.close()
+        self.__admin_login.close()
+        self.__voter_login.close()
+        self.__candidate_login.close()
 
         event.accept
+
+
+    def __openAdminWindow( self ) -> None : ovs_app_config.bringWindowForward( self.__admin_login )
+
+    def __openCandidateWindow( self ) -> None : ovs_app_config.bringWindowForward( self.__candidate_login )
+
+    def __openVoterWindow( self ) -> None : ovs_app_config.bringWindowForward( self.__voter_login )

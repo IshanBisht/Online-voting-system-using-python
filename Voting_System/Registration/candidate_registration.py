@@ -28,7 +28,7 @@ class CandidateRegistration(QWidget):
 
         # Aadhar Number
         self.aadhar = QLineEdit()
-        self.aadhar.setValidator(QIntValidator())
+        self.aadhar.setValidator( ovs_app_config.getUnsignedIntValidator() )
         self.aadhar.setMaxLength(12)
         self.aadhar.setPlaceholderText("Enter 12-digit Aadhar Number")
         self.aadhar.setStyleSheet( CSS_STYLE_FOR_INPUT_BOX )
@@ -125,6 +125,12 @@ class CandidateRegistration(QWidget):
         try :
             generated_candidate_id = ovs_data_manager.registerCandidate(int(aadhar_num), fname, lname, election_place, password_text)
             ovs_app_config.showInformation(self, f"Candidate registered successfully with ID '{ generated_candidate_id }'" , "Success")
+            self.aadhar.clear()
+            self.first_name.clear()
+            self.last_name.clear()
+            self.place.clear()
+            self.password.clear()
+            self.agree_checkbox.setChecked(False)
         
         except OvsException as excep:
             ovs_app_config.showError( self, "Cannot register the candidate because " + excep.__str__(), "Error" )
