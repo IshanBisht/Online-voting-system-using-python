@@ -1,4 +1,3 @@
-----------Modules-------------
-
-tkinter module
-pymysql module
+pyqt5==5.15.11;
+pymysql==1.1.1;
+cryptography==45.0.5;
