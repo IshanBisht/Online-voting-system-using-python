@@ -26,15 +26,14 @@ class AdminDashboard(QWidget):
         label_layout = QHBoxLayout()
 
         # Info Labels
-        self.label_id = QLabel("")
-        self.label_name = QLabel("")
-        self.label_place = QLabel("")
+        self.label_id = ovs_app_config.createDashboardLabel("")
+        self.label_name = ovs_app_config.createDashboardLabel("")
+        self.label_place = ovs_app_config.createDashboardLabel("")
 
-        for label in [self.label_id, self.label_name, self.label_place]:
-            label.setStyleSheet( CSS_STYLE_FOR_DASHBOARD_LABELS )
-            label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-            label.setFont( ovs_app_config.getDashboardLabelFont() )
-            label_layout.addWidget(label)
+        
+        label_layout.addWidget( self.label_id)
+        label_layout.addWidget( self.label_name)
+        label_layout.addWidget( self.label_place)
         
         layout.addLayout(label_layout)
 
@@ -83,7 +82,7 @@ class AdminDashboard(QWidget):
         self.label_id.setText("Admin ID: " + str( self.__admin_id) )
         self.label_name.setText("Name: "   + str( __values[KEY_FULL_NAME] ).capitalize())
         self.label_place.setText("Place: " + str( self.__admin_place )     .capitalize())
-        self.show()
+        ovs_app_config.bringWindowForward( self )
 
     
     def __deleteCandidates( self ) -> None :
@@ -103,6 +102,6 @@ class AdminDashboard(QWidget):
         try : 
             ovs_data_manager.publishResult( str(self.__admin_place) )
             ovs_app_config.showInformation( self, "Election Result has been published successfully!")
-        except OvsException as excep :
+        except Exception as excep :
             ovs_app_config.showError( self, excep.__str__())
         
