@@ -13,9 +13,9 @@ class MainApp(QWidget):
         self.setStyleSheet( CSS_STYLE_FOR_WIDGETS )
         self.setFixedSize(self.FIXED_WIDTH, self.FIXED_HEIGHT)
 
-        self.registration_window = RegistrationWindow()
-        self.login_window = LoginWindow()
-        self.result_window = ElectionResult()
+        self.__registration_window = RegistrationWindow()
+        self.__login_window = LoginWindow()
+        self.__result_window = ElectionResult()
 
         self.setup_ui()
 
@@ -29,18 +29,17 @@ class MainApp(QWidget):
 
         layout.addSpacing(40)
 
-
         btn_registration = QPushButton("Registration")
         btn_registration.setStyleSheet( CSS_STYLE_FOR_BUTTONS)
-        btn_registration.clicked.connect( self.registration_window.show)
+        btn_registration.clicked.connect( self.__openRegistrationWindow )
 
         btn_login = QPushButton("Login")
         btn_login.setStyleSheet( CSS_STYLE_FOR_BUTTONS)
-        btn_login.clicked.connect( self.login_window.show )
+        btn_login.clicked.connect( self.__openLoginWindow )
 
         btn_result = QPushButton("Election Results")
         btn_result.setStyleSheet( CSS_STYLE_FOR_BUTTONS )
-        btn_result.clicked.connect( self.result_window.show )
+        btn_result.clicked.connect( self.__openResultWindow )
 
         layout.addWidget(btn_registration)
         layout.addSpacing(20)
@@ -53,6 +52,14 @@ class MainApp(QWidget):
 
 
     def closeEvent(self , event : QCloseEvent) -> None:
-        self.registration_window.close()
-        self.login_window.close()
+        self.__registration_window.close()
+        self.__login_window.close()
+        self.__result_window.close()
         event.accept()
+
+
+    def __openRegistrationWindow( self ) -> None : ovs_app_config.bringWindowForward( self.__registration_window )
+
+    def __openLoginWindow( self ) -> None : ovs_app_config.bringWindowForward( self.__login_window )
+
+    def __openResultWindow( self ) -> None : ovs_app_config.bringWindowForward( self.__result_window )
