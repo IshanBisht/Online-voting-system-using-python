@@ -15,7 +15,7 @@
 
 - To run this project, first download install **Python3** from <a href="https://www.python.org/downloads">here</a>.
 
-- After successful installation, Connect to the internet and open terminal/command prompt in the current folder and type this command ```pip install -r requirements.txt```.
+- After successful installation, Connect to the internet and open terminal/command prompt in the current folder and type this command ```setup.py```.
 
 - If all the neccessary packages and libraries will be installed succesfully, then only move to next step.
 
